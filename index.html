@@ -965,10 +965,9 @@
                 document.getElementById('btn-entrar').style.display = 'none';
                 document.getElementById('loading-screen').style.display = 'block';
                 
-                fetch(URL_DO_APPS_SCRIPT, { method: 'GET', redirect: 'follow' })
-                    .then(res => res.text())
-                    .then(texto => {
-                        let resposta = JSON.parse(texto);
+                fetch(URL_DO_APPS_SCRIPT)
+                    .then(res => res.json())
+                    .then(resposta => {
                         if (resposta.status === 'sucesso') {
                             let dadosRetornados = resposta.dados || [];
                             document.getElementById('login-screen').style.display = 'none';
@@ -1057,10 +1056,9 @@
                 document.getElementById('btn-entrar').style.display = 'none';
                 document.getElementById('loading-screen').style.display = 'block';
                 
-                fetch(URL_DO_APPS_SCRIPT, { method: 'GET', redirect: 'follow' })
-                    .then(res => res.text())
-                    .then(texto => {
-                        let resposta = JSON.parse(texto);
+                fetch(URL_DO_APPS_SCRIPT)
+                    .then(res => res.json())
+                    .then(resposta => {
                         if (resposta.status === 'sucesso') {
                             let dadosRetornados = resposta.dados || [];
                             document.getElementById('login-screen').style.display = 'none';
@@ -1194,9 +1192,8 @@
                 headers: { 'Content-Type': 'text/plain;charset=utf-8' },
                 body: JSON.stringify({ acao: 'sincronizar', dados: baseDeDados })
             })
-            .then(res => res.text())
-            .then(texto => {
-                let resposta = JSON.parse(texto);
+            .then(res => res.json())
+            .then(resposta => {
                 if (resposta.status === 'sucesso') {
                     aviso.style.display = 'none';
                 } else {
@@ -1596,9 +1593,8 @@
                             headers: { 'Content-Type': 'text/plain;charset=utf-8' },
                             body: JSON.stringify({ acao: 'fecharMes', dados: relatorio })
                         })
-                        .then(res => res.text())
-                        .then(texto => {
-                            let resposta = JSON.parse(texto);
+                        .then(res => res.json())
+                        .then(resposta => {
                             if(resposta.status === 'sucesso') {
                                 mostrarModal("Sucesso", "Mês validado e Relatório gravado com sucesso!", "fa-check", "var(--laranja)", "alerta");
                             } else {
