@@ -939,8 +939,7 @@
     <!-- =========================================
          LÓGICA JAVASCRIPT DO SISTEMA
          ========================================= -->
-    <script>
-        const credenciais = { 
+const credenciais = { 
             "12345": "José", 
             "1234": "Theo", 
             "123456": "Leo", 
@@ -948,7 +947,7 @@
         };
         
         // --- COLOQUE O LINK DO SEU APPS SCRIPT AQUI DENTRO DAS ASPAS ---
-        const URL_DO_APPS_SCRIPT = "https://script.google.com/macros/s/AKfycbwHz9hnVnpJS1e0rCHsFhxcTGrLq9gmXW-2px68xlwJtEHMnCblmuhpJGNJDMkeFrItNw/exec"; 
+        const URL_DO_APPS_SCRIPT = "COLE_O_SEU_LINK_AQUI"; 
         
         let usuarioAtivo = "";
         let baseDeDados = [];
@@ -965,23 +964,30 @@
                 document.getElementById('btn-entrar').style.display = 'none';
                 document.getElementById('loading-screen').style.display = 'block';
                 
-                fetch(URL_DO_APPS_SCRIPT)
-                    .then(res => res.json())
-                    .then(resposta => {
-                        if (resposta.status === 'sucesso') {
-                            let dadosRetornados = resposta.dados || [];
-                            document.getElementById('login-screen').style.display = 'none';
-                            document.getElementById('app-screen').style.display = 'block';
-                            iniciarAplicacao(dadosRetornados); 
-                        } else {
-                            throw new Error(resposta.mensagem);
+                // Conexão melhorada com o Google
+                fetch(URL_DO_APPS_SCRIPT, { method: 'GET', redirect: 'follow' })
+                    .then(res => res.text()) // Lê como texto primeiro para não quebrar
+                    .then(texto => {
+                        try {
+                            let resposta = JSON.parse(texto);
+                            if (resposta.status === 'sucesso') {
+                                let dadosRetornados = resposta.dados || [];
+                                document.getElementById('login-screen').style.display = 'none';
+                                document.getElementById('app-screen').style.display = 'block';
+                                iniciarAplicacao(dadosRetornados); 
+                            } else {
+                                throw new Error(resposta.mensagem);
+                            }
+                        } catch(e) {
+                            console.error("Retorno estranho do Google:", texto);
+                            throw new Error("O Google não enviou os dados corretamente. Verifique se o link da URL está certo e termina em /exec.");
                         }
                     })
                     .catch(erro => { 
-                        mostrarModal("Erro", "Sessão expirada. Faça login novamente.", "fa-wifi", "var(--vermelho)", "alerta");
+                        mostrarModal("Erro de Conexão", erro.message, "fa-wifi", "var(--vermelho)", "alerta");
                         document.getElementById('btn-entrar').style.display = 'block';
                         document.getElementById('loading-screen').style.display = 'none';
-                        localStorage.removeItem('usuarioAtivoEduc');
+                        localStorage.removeItem('usuarioAtivoEduc'); // Limpa o login travado
                     });
             }
         };
@@ -1051,27 +1057,34 @@
 
             if (credenciais[pass]) {
                 usuarioAtivo = credenciais[pass];
-                localStorage.setItem('usuarioAtivoEduc', usuarioAtivo); // Salva o login no navegador
+                localStorage.setItem('usuarioAtivoEduc', usuarioAtivo);
 
                 document.getElementById('btn-entrar').style.display = 'none';
                 document.getElementById('loading-screen').style.display = 'block';
                 
-                fetch(URL_DO_APPS_SCRIPT)
-                    .then(res => res.json())
-                    .then(resposta => {
-                        if (resposta.status === 'sucesso') {
-                            let dadosRetornados = resposta.dados || [];
-                            document.getElementById('login-screen').style.display = 'none';
-                            document.getElementById('app-screen').style.display = 'block';
-                            iniciarAplicacao(dadosRetornados); 
-                        } else {
-                            throw new Error(resposta.mensagem);
+                fetch(URL_DO_APPS_SCRIPT, { method: 'GET', redirect: 'follow' })
+                    .then(res => res.text())
+                    .then(texto => {
+                        try {
+                            let resposta = JSON.parse(texto);
+                            if (resposta.status === 'sucesso') {
+                                let dadosRetornados = resposta.dados || [];
+                                document.getElementById('login-screen').style.display = 'none';
+                                document.getElementById('app-screen').style.display = 'block';
+                                iniciarAplicacao(dadosRetornados); 
+                            } else {
+                                throw new Error(resposta.mensagem);
+                            }
+                        } catch(e) {
+                            console.error("Retorno estranho do Google:", texto);
+                            throw new Error("O Google não enviou os dados corretamente. Verifique se o link da URL está certo e termina em /exec.");
                         }
                     })
                     .catch(erro => { 
-                        mostrarModal("Erro", "Falha ao conectar com a planilha. Tente novamente.", "fa-wifi", "var(--vermelho)", "alerta");
+                        mostrarModal("Erro de Conexão", erro.message, "fa-wifi", "var(--vermelho)", "alerta");
                         document.getElementById('btn-entrar').style.display = 'block';
                         document.getElementById('loading-screen').style.display = 'none';
+                        localStorage.removeItem('usuarioAtivoEduc');
                     });
             } else {
                 mostrarModal("Acesso Negado", "Senha incorreta!", "fa-lock", "var(--vermelho)", "alerta");
@@ -1082,11 +1095,9 @@
         function sair() { 
             localStorage.removeItem('usuarioAtivoEduc'); 
             
-            // Esconde o painel e mostra o login novamente
             document.getElementById('app-screen').style.display = 'none';
             document.getElementById('login-screen').style.display = 'flex';
             
-            // Limpa o campo de senha
             document.getElementById('senha').value = '';
             document.getElementById('btn-entrar').style.display = 'block';
             document.getElementById('loading-screen').style.display = 'none';
@@ -1101,34 +1112,26 @@
             const hoje = new Date();
             const anoAtual = hoje.getFullYear();
             
-            // Cria as opções de meses do ano com texto em Português
             for(let m = 0; m < 12; m++) {
                 const valor = `${anoAtual}-${String(m + 1).padStart(2, '0')}`;
                 const texto = `${mesesNomes[m]} de ${anoAtual}`;
                 selectFiltro.innerHTML += `<option value="${valor}">${texto}</option>`;
             }
             
-            // Define o mês atual como selecionado por padrão
             selectFiltro.value = `${anoAtual}-${String(hoje.getMonth() + 1).padStart(2, '0')}`;
         }
 
         function mudouMesFiltro() {
-            // RETORNA PARA A TURMA "A" (Primeira opção do select)
             document.getElementById('turma').selectedIndex = 0;
-            
             atualizarTela();
             
             const mesFiltro = document.getElementById('filtro-mes').value;
             const [ano, mes] = mesFiltro.split('-');
             const ultimoDia = new Date(ano, mes, 0).getDate();
-            
             const inputData = document.getElementById('data-aula');
             
-            // Trava o calendário para permitir cliques apenas nos dias do mês selecionado
             inputData.min = `${ano}-${mes}-01`;
             inputData.max = `${ano}-${mes}-${ultimoDia}`;
-            
-            // Reseta a data para o primeiro dia do mês escolhido no histórico
             inputData.value = `${ano}-${mes}-01`; 
         }
 
@@ -1147,20 +1150,16 @@
             const dia = String(hoje.getDate()).padStart(2, '0');
 
             const inputData = document.getElementById('data-aula');
-            
             mudouMesFiltro();
             
-            // Volta a exibir a data de hoje exata para não começar sempre no dia 01
             inputData.value = `${ano}-${mes}-${dia}`; 
         }
 
         // --- FILTRO DO MÊS ---
         function getDadosFiltrados() {
-            const mesFiltro = document.getElementById('filtro-mes').value; // Ex: "2026-08"
+            const mesFiltro = document.getElementById('filtro-mes').value; 
             
-            if (!mesFiltro) {
-                return baseDeDados;
-            }
+            if (!mesFiltro) return baseDeDados;
             
             const [anoFiltro, mesFiltroNum] = mesFiltro.split('-');
             
@@ -1201,7 +1200,7 @@
                 }
             })
             .catch(e => {
-                aviso.innerText = "Erro ao salvar!";
+                aviso.innerText = "Erro ao salvar na nuvem!";
                 setTimeout(() => {
                     aviso.style.display = 'none';
                     aviso.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Sincronizando dados...';
@@ -1220,7 +1219,6 @@
                 return;
             }
 
-            // TRAVA DE SEGURANÇA: Impede misturar meses!
             const mesFiltroSelecionado = document.getElementById('filtro-mes').value; 
             const mesDaDataAula = dataAula.substring(0, 7); 
             
@@ -1279,12 +1277,9 @@
                 baseDeDados.push(novoRegistro); 
             }
 
-            // LIMPA OS CAMPOS
             document.getElementById('mat').value = ''; 
             document.getElementById('pres').value = ''; 
             document.getElementById('rep').value = '0';
-            
-            // RESETA A TURMA PARA A OPÇÃO "A" (Índice 0)
             document.getElementById('turma').selectedIndex = 0;
             
             calcular(); 
@@ -1303,7 +1298,6 @@
             
             let dadosFiltrados = getDadosFiltrados();
             
-            // ORDENAR POR DATA CRESCENTE (Do dia 01 para o final)
             dadosFiltrados.sort((a, b) => {
                 const [diaA, mesA, anoA] = a.dataAula.split('/');
                 const [diaB, mesB, anoB] = b.dataAula.split('/');
@@ -1341,6 +1335,267 @@
                         sincronizarComPlanilha();
                     } else { 
                         mostrarModal("Erro", "Senha incorreta!", "fa-circle-xmark", "var(--vermelho)", "alerta"); 
+                    }
+                }
+            );
+        }
+
+        function editar(id) {
+            const reg = baseDeDados.find(r => r.id === id);
+            
+            if(reg) {
+                document.getElementById('turma').value = reg.turma; 
+                document.getElementById('mat').value = reg.mat;
+                document.getElementById('pres').value = reg.pres; 
+                document.getElementById('rep').value = reg.rep;
+                
+                const p = reg.dataAula.split('/'); 
+                document.getElementById('data-aula').value = `${p[2]}-${p[1]}-${p[0]}`;
+                
+                calcular(); 
+                idSendoEditado = id;
+                
+                document.getElementById('btn-registrar-freq').innerHTML = '<i class="fa-solid fa-arrows-rotate"></i> Atualizar Registro';
+                document.getElementById('btn-registrar-freq').classList.replace('btn-laranja', 'btn-marrom');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
+
+        function atualizarDashboard() {
+            let tMat = 0;
+            let tPres = 0;
+            let tRep = 0;
+            let tFaltas = 0;
+            let tTotPres = 0;
+            
+            let turmasOcup = { 
+                "07:00–09:00": {p:0, f:0}, 
+                "09:00–11:00": {p:0, f:0}, 
+                "11:00–13:00": {p:0, f:0}, 
+                "13:00–15:00": {p:0, f:0}, 
+                "15:00–17:00": {p:0, f:0}, 
+                "17:00–19:00": {p:0, f:0} 
+            };
+            
+            let turnosOcup = { 
+                "GERAL MANHÃ": {p:0, f:0}, 
+                "GERAL TARDE": {p:0, f:0} 
+            };
+
+            const dadosFiltrados = getDadosFiltrados();
+
+            dadosFiltrados.forEach(r => {
+                tMat += r.mat; 
+                tPres += r.pres; 
+                tRep += r.rep; 
+                tFaltas += r.faltas; 
+                tTotPres += r.totPres; 
+                
+                let horario = r.turma.split(" - ")[1].replace(" às ", "–");
+                
+                if(turmasOcup[horario]) { 
+                    turmasOcup[horario].p += r.totPres; 
+                    turmasOcup[horario].f += r.faltas; 
+                }
+                
+                if(horario.includes("07:00") || horario.includes("09:00") || horario.includes("11:00")) {
+                    turnosOcup["GERAL MANHÃ"].p += r.totPres; 
+                    turnosOcup["GERAL MANHÃ"].f += r.faltas;
+                } else { 
+                    turnosOcup["GERAL TARDE"].p += r.totPres; 
+                    turnosOcup["GERAL TARDE"].f += r.faltas; 
+                }
+            });
+
+            document.getElementById('dash-mat').innerText = tMat; 
+            document.getElementById('dash-pres').innerText = tPres; 
+            document.getElementById('dash-rep').innerText = tRep; 
+            document.getElementById('dash-falta').innerText = tFaltas;
+
+            const somaBase = tTotPres + tFaltas; 
+            const pctOcupacao = somaBase > 0 ? (tTotPres / somaBase) * 100 : 0;
+            const pctFaltantes = somaBase > 0 ? (tFaltas / somaBase) * 100 : 0;
+            
+            const taxaRep = tTotPres > 0 ? (tRep / tTotPres) * 100 : 0;
+            const somaEfetiva = tPres + tFaltas;
+            const pctEfetiva = somaEfetiva > 0 ? (tPres / somaEfetiva) * 100 : 0;
+            
+            document.getElementById('dash-pct-ocup').innerText = pctOcupacao.toFixed(2) + "%";
+            document.getElementById('dash-pct-falt').innerText = pctFaltantes.toFixed(2) + "%";
+            document.getElementById('dash-pct-rep').innerText = taxaRep.toFixed(2) + "%";
+            document.getElementById('dash-pct-efetiva').innerText = pctEfetiva.toFixed(2) + "%";
+
+            gerarGraficos(turmasOcup, turnosOcup);
+        }
+
+        function gerarGraficos(turmas, turnos) {
+            const calcOcup = (p, f) => (p+f) > 0 ? ((p / (p+f)) * 100).toFixed(2) : 0;
+            
+            if(chartTurmas) { chartTurmas.destroy(); }
+            if(chartTurnos) { chartTurnos.destroy(); }
+            
+            Chart.register(ChartDataLabels);
+
+            const coresDasBarras = Object.keys(turmas).map(horario => {
+                if(horario.includes("07:00") || horario.includes("09:00") || horario.includes("11:00")) {
+                    return '#F39C12';
+                } else {
+                    return '#5D4037'; 
+                }
+            });
+            
+            chartTurmas = new Chart(document.getElementById('graficoTurmas'), {
+                type: 'bar', 
+                data: { 
+                    labels: Object.keys(turmas), 
+                    datasets: [{ 
+                        label: '% de Ocupação', 
+                        data: Object.keys(turmas).map(k => calcOcup(turmas[k].p, turmas[k].f)), 
+                        backgroundColor: coresDasBarras, 
+                        borderRadius: 4 
+                    }] 
+                }, 
+                options: { 
+                    responsive: true, 
+                    scales: { y: { max: 115, display: false } }, 
+                    plugins: { 
+                        legend: { display: false },
+                        datalabels: {
+                            anchor: 'end', 
+                            align: 'top', 
+                            color: '#5D4037', 
+                            font: { weight: 'bold', size: 10 },
+                            formatter: function(value) { return value + '%'; }
+                        }
+                    },
+                    layout: { padding: { top: 15 } }, 
+                    animation: false 
+                }
+            });
+            
+            const legendasTurnosComValor = Object.keys(turnos).map(k => {
+                return k + ' - ' + calcOcup(turnos[k].p, turnos[k].f) + '%';
+            });
+
+            chartTurnos = new Chart(document.getElementById('graficoTurnos'), {
+                type: 'doughnut', 
+                data: { 
+                    labels: legendasTurnosComValor, 
+                    datasets: [{ 
+                        data: Object.keys(turnos).map(k => calcOcup(turnos[k].p, turnos[k].f)), 
+                        backgroundColor: ['#D4AF37', '#5D4037'], 
+                        borderWidth: 0 
+                    }] 
+                }, 
+                options: { 
+                    responsive: true, 
+                    cutout: '70%', 
+                    plugins: { 
+                        legend: { 
+                            position: 'bottom',
+                            labels: {
+                                font: { weight: 'bold', size: 11 },
+                                color: '#5D4037'
+                            }
+                        },
+                        datalabels: { display: false }
+                    },
+                    animation: false 
+                }
+            });
+        }
+
+        // --- SISTEMA DE ASSINATURA PARA IMPRESSÃO/PDF ---
+        function escreverAssinatura() {
+            const agora = new Date();
+            const dataFormatada = agora.toLocaleDateString('pt-BR');
+            const horaFormatada = agora.toLocaleTimeString('pt-BR').substring(0,5);
+            
+            const selectFiltro = document.getElementById('filtro-mes');
+            let refFormatada = "N/A";
+            
+            if (selectFiltro && selectFiltro.options.length > 0) {
+                refFormatada = selectFiltro.options[selectFiltro.selectedIndex].text;
+            }
+
+            document.getElementById('assinatura-impressao').innerText = `Relatório impresso por ${usuarioAtivo} às ${horaFormatada} do dia ${dataFormatada} | Ref: ${refFormatada}`;
+        }
+
+        function prepararEImprimir() {
+            escreverAssinatura();
+            document.querySelector('.tabela-container').classList.add('print-ativo');
+            
+            setTimeout(() => {
+                window.print();
+                document.querySelector('.tabela-container').classList.remove('print-ativo');
+            }, 300);
+        }
+
+        function baixarPDF() {
+            escreverAssinatura();
+            
+            document.body.classList.add('modo-pdf');
+            document.querySelector('.tabela-container').classList.add('print-ativo');
+            
+            const elemento = document.getElementById('app-screen');
+            const opt = {
+                margin: [10, 10, 10, 10], 
+                filename: 'Relatorio_Presencas_Educ.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2, useCORS: true, scrollY: 0 },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' },
+                pagebreak: { mode: ['css', 'legacy'] } 
+            };
+
+            setTimeout(() => {
+                html2pdf().set(opt).from(elemento).save().then(() => {
+                    document.body.classList.remove('modo-pdf');
+                    document.querySelector('.tabela-container').classList.remove('print-ativo');
+                });
+            }, 300);
+        }
+
+        function solicitarFechamento() {
+            mostrarModal("Fechamento", "Senha para confirmar o fechamento do mês:", "fa-lock", "var(--vermelho)", "prompt",
+                function(senhaDigitada) {
+                    const senhaExigida = Object.keys(credenciais).find(key => credenciais[key] === usuarioAtivo);
+                    
+                    if(senhaDigitada === senhaExigida) {
+                        
+                        const selectFiltro = document.getElementById('filtro-mes');
+                        const relatorio = {
+                            mes: selectFiltro.options[selectFiltro.selectedIndex].text,
+                            mat: document.getElementById('dash-mat').innerText,
+                            pres: document.getElementById('dash-pres').innerText,
+                            rep: document.getElementById('dash-rep').innerText,
+                            faltas: document.getElementById('dash-falta').innerText,
+                            ocupacao: document.getElementById('dash-pct-ocup').innerText,
+                            faltantes: document.getElementById('dash-pct-falt').innerText,
+                            taxaRep: document.getElementById('dash-pct-rep').innerText,
+                            presEfetiva: document.getElementById('dash-pct-efetiva').innerText
+                        };
+
+                        mostrarModal("Aguarde", "Gravando fechamento na planilha...", "fa-spinner fa-spin", "var(--laranja)", "alerta");
+                        
+                        fetch(URL_DO_APPS_SCRIPT, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                            body: JSON.stringify({ acao: 'fecharMes', dados: relatorio })
+                        })
+                        .then(res => res.json())
+                        .then(resposta => {
+                            if(resposta.status === 'sucesso') {
+                                mostrarModal("Sucesso", "Mês validado e Relatório gravado com sucesso!", "fa-check", "var(--laranja)", "alerta");
+                            } else {
+                                throw new Error(resposta.mensagem);
+                            }
+                        })
+                        .catch(erro => {
+                            mostrarModal("Erro Crítico", "Falha na comunicação: " + erro.message, "fa-xmark", "var(--vermelho)", "alerta");
+                        });
+
+                    } else { 
+                        mostrarModal("Acesso Negado", "Senha incorreta!", "fa-ban", "var(--vermelho)", "alerta"); 
                     }
                 }
             );
