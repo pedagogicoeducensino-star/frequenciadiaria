@@ -975,24 +975,34 @@
             // 2. Inicializa o sistema vazio, sem depender da internet
             iniciarAplicacao([]); 
             
-            // 3. Tenta puxar os dados antigos. Se der erro, não vai deslogar ninguém.
+            // 3. Tenta puxar os dados antigos
             buscarDadosDaPlanilha();
         }
 
+        // =========================================================================
+        // MODO DETETIVE: ALTERAMOS AQUI PARA DESCOBRIR A DESCULPA DO GOOGLE
+        // =========================================================================
         function buscarDadosDaPlanilha() {
             fetch(URL_DO_APPS_SCRIPT)
-                .then(res => res.json())
-                .then(resposta => {
-                    if (resposta.status === 'sucesso') {
-                        baseDeDados = resposta.dados || [];
-                        atualizarTela(); // Preenche a tabela com os dados que chegaram
-                    } else {
-                        throw new Error(resposta.mensagem);
+                .then(res => res.text()) // Lemos como texto primeiro, para ver se o Google mandou um HTML de erro
+                .then(texto => {
+                    try {
+                        let resposta = JSON.parse(texto);
+                        if (resposta.status === 'sucesso') {
+                            baseDeDados = resposta.dados || [];
+                            atualizarTela(); // Preenche a tabela
+                        } else {
+                            // Se o Apps Script devolveu status de erro:
+                            throw new Error("Erro da planilha: " + resposta.mensagem);
+                        }
+                    } catch(e) {
+                        // Se não for possível ler como JSON, significa que o Google bloqueou o acesso
+                        throw new Error(e.message + "\n(O Google bloqueou a resposta. Provavelmente falha de permissão)");
                     }
                 })
                 .catch(erro => { 
-                    // Como você já está logado, ele apenas dá um aviso suave e permite continuar usando.
-                    mostrarModal("Aviso de Conexão", "Você entrou no sistema, mas houve uma falha ao puxar os dados antigos da planilha. Você pode registrar novas frequências normalmente.", "fa-wifi", "var(--laranja)", "alerta");
+                    // Mostramos exatamente a mensagem de erro que capturamos
+                    mostrarModal("Aviso de Conexão", "Erro técnico: " + erro.message, "fa-wifi", "var(--laranja)", "alerta");
                 });
         }
 
@@ -1185,20 +1195,25 @@
                 headers: { 'Content-Type': 'text/plain;charset=utf-8' },
                 body: JSON.stringify({ acao: 'sincronizar', dados: baseDeDados })
             })
-            .then(res => res.json())
-            .then(resposta => {
-                if (resposta.status === 'sucesso') {
-                    aviso.style.display = 'none';
-                } else {
-                    throw new Error(resposta.mensagem);
+            .then(res => res.text())
+            .then(texto => {
+                try {
+                    let resposta = JSON.parse(texto);
+                    if (resposta.status === 'sucesso') {
+                        aviso.style.display = 'none';
+                    } else {
+                        throw new Error(resposta.mensagem);
+                    }
+                } catch(e) {
+                    throw new Error("O servidor retornou uma resposta inválida ao salvar.");
                 }
             })
             .catch(e => {
-                aviso.innerText = "Erro ao salvar!";
+                aviso.innerText = "Erro: " + e.message;
                 setTimeout(() => {
                     aviso.style.display = 'none';
                     aviso.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Sincronizando dados...';
-                }, 3000);
+                }, 4000);
             });
         }
 
@@ -1586,12 +1601,17 @@
                             headers: { 'Content-Type': 'text/plain;charset=utf-8' },
                             body: JSON.stringify({ acao: 'fecharMes', dados: relatorio })
                         })
-                        .then(res => res.json())
-                        .then(resposta => {
-                            if(resposta.status === 'sucesso') {
-                                mostrarModal("Sucesso", "Mês validado e Relatório gravado com sucesso!", "fa-check", "var(--laranja)", "alerta");
-                            } else {
-                                throw new Error(resposta.mensagem);
+                        .then(res => res.text())
+                        .then(texto => {
+                            try {
+                                let resposta = JSON.parse(texto);
+                                if(resposta.status === 'sucesso') {
+                                    mostrarModal("Sucesso", "Mês validado e Relatório gravado com sucesso!", "fa-check", "var(--laranja)", "alerta");
+                                } else {
+                                    throw new Error(resposta.mensagem);
+                                }
+                            } catch(e) {
+                                throw new Error("Resposta inválida do servidor.");
                             }
                         })
                         .catch(erro => {
