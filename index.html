@@ -962,29 +962,39 @@
             const usuarioSalvo = localStorage.getItem('usuarioAtivoEduc');
             if (usuarioSalvo) {
                 usuarioAtivo = usuarioSalvo;
-                document.getElementById('btn-entrar').style.display = 'none';
-                document.getElementById('loading-screen').style.display = 'block';
-                
-                fetch(URL_DO_APPS_SCRIPT)
-                    .then(res => res.json())
-                    .then(resposta => {
-                        if (resposta.status === 'sucesso') {
-                            let dadosRetornados = resposta.dados || [];
-                            document.getElementById('login-screen').style.display = 'none';
-                            document.getElementById('app-screen').style.display = 'block';
-                            iniciarAplicacao(dadosRetornados); 
-                        } else {
-                            throw new Error(resposta.mensagem);
-                        }
-                    })
-                    .catch(erro => { 
-                        mostrarModal("Erro", "Sessão expirada. Faça login novamente.", "fa-wifi", "var(--vermelho)", "alerta");
-                        document.getElementById('btn-entrar').style.display = 'block';
-                        document.getElementById('loading-screen').style.display = 'none';
-                        localStorage.removeItem('usuarioAtivoEduc');
-                    });
+                entrarDiretoNoSistema();
             }
         };
+
+        // --- FUNÇÃO SEPARADA PARA ENTRAR NO SISTEMA E DEPOIS PUXAR OS DADOS ---
+        function entrarDiretoNoSistema() {
+            // 1. Esconde a tela de login e mostra o sistema IMEDIATAMENTE
+            document.getElementById('login-screen').style.display = 'none';
+            document.getElementById('app-screen').style.display = 'block';
+            
+            // 2. Inicializa o sistema vazio, sem depender da internet
+            iniciarAplicacao([]); 
+            
+            // 3. Tenta puxar os dados antigos. Se der erro, não vai deslogar ninguém.
+            buscarDadosDaPlanilha();
+        }
+
+        function buscarDadosDaPlanilha() {
+            fetch(URL_DO_APPS_SCRIPT)
+                .then(res => res.json())
+                .then(resposta => {
+                    if (resposta.status === 'sucesso') {
+                        baseDeDados = resposta.dados || [];
+                        atualizarTela(); // Preenche a tabela com os dados que chegaram
+                    } else {
+                        throw new Error(resposta.mensagem);
+                    }
+                })
+                .catch(erro => { 
+                    // Como você já está logado, ele apenas dá um aviso suave e permite continuar usando.
+                    mostrarModal("Aviso de Conexão", "Você entrou no sistema, mas houve uma falha ao puxar os dados antigos da planilha. Você pode registrar novas frequências normalmente.", "fa-wifi", "var(--laranja)", "alerta");
+                });
+        }
 
         // --- SISTEMA DE MODAIS ---
         function mostrarModal(titulo, mensagem, icone, cor, tipo, callback) {
@@ -1039,7 +1049,7 @@
             }
         });
 
-        // --- LOGIN E CONEXÃO ---
+        // --- LOGIN ---
         function verificarEnter(event) { 
             if (event.key === "Enter") {
                 entrar(); 
@@ -1052,27 +1062,10 @@
             if (credenciais[pass]) {
                 usuarioAtivo = credenciais[pass];
                 localStorage.setItem('usuarioAtivoEduc', usuarioAtivo); // Salva o login no navegador
-
-                document.getElementById('btn-entrar').style.display = 'none';
-                document.getElementById('loading-screen').style.display = 'block';
                 
-                fetch(URL_DO_APPS_SCRIPT)
-                    .then(res => res.json())
-                    .then(resposta => {
-                        if (resposta.status === 'sucesso') {
-                            let dadosRetornados = resposta.dados || [];
-                            document.getElementById('login-screen').style.display = 'none';
-                            document.getElementById('app-screen').style.display = 'block';
-                            iniciarAplicacao(dadosRetornados); 
-                        } else {
-                            throw new Error(resposta.mensagem);
-                        }
-                    })
-                    .catch(erro => { 
-                        mostrarModal("Erro", "Falha ao conectar com a planilha. Tente novamente.", "fa-wifi", "var(--vermelho)", "alerta");
-                        document.getElementById('btn-entrar').style.display = 'block';
-                        document.getElementById('loading-screen').style.display = 'none';
-                    });
+                // Entra direto sem esperar resposta do servidor
+                entrarDiretoNoSistema();
+                
             } else {
                 mostrarModal("Acesso Negado", "Senha incorreta!", "fa-lock", "var(--vermelho)", "alerta");
                 document.getElementById('senha').value = "";
