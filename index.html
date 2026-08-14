@@ -1550,8 +1550,19 @@
             }, 300);
         }
 
-        function baixarPDF() {
+function baixarPDF() {
             escreverAssinatura();
+            
+            // Lógica para descobrir qual mês está selecionado
+            const selectFiltro = document.getElementById('filtro-mes');
+            let nomeDoMes = "Mes"; // Nome padrão caso dê algum erro
+            
+            if (selectFiltro && selectFiltro.options.length > 0) {
+                // Pega o texto inteiro (ex: "Agosto de 2026")
+                const textoSelect = selectFiltro.options[selectFiltro.selectedIndex].text; 
+                // Corta o texto nos espaços e pega só a primeira palavra ("Agosto")
+                nomeDoMes = textoSelect.split(' ')[0]; 
+            }
             
             document.body.classList.add('modo-pdf');
             document.querySelector('.tabela-container').classList.add('print-ativo');
@@ -1559,7 +1570,8 @@
             const elemento = document.getElementById('app-screen');
             const opt = {
                 margin: [10, 10, 10, 10], 
-                filename: 'Relatorio_Presencas_Educ.pdf',
+                // Agora o nome do arquivo usa a variável dinâmica que pegamos ali em cima
+                filename: `Relatorio_Presencas_${nomeDoMes}.pdf`,
                 image: { type: 'jpeg', quality: 0.98 },
                 html2canvas: { scale: 2, useCORS: true, scrollY: 0 },
                 jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' },
