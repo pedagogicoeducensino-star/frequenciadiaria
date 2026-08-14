@@ -941,10 +941,10 @@
          ========================================= -->
     <script>
         const credenciais = { 
-            "12345": "José", 
-            "1234": "Theo", 
-            "123456": "Leo", 
-            "1234567": "Daniel" 
+            "88276590": "José Esley", 
+            "34769849": "Theo Araujo", 
+            "33037295030528": "Leandro Messias", 
+            "300820092795": "Daniel Guilherme" 
         };
         
         // --- COLOQUE O LINK DO SEU APPS SCRIPT AQUI DENTRO DAS ASPAS ---
@@ -1139,7 +1139,7 @@
             baseDeDados = dadosRetornados;
             
             const hora = new Date().getHours();
-            let msg = hora < 12 ? "Bom dia" : hora < 18 ? "Boa tarde" : "Boa noite";
+            let msg = hora < 12 ? "Bom Dia" : hora < 18 ? "Boa Tarde" : "Boa Noite";
             document.getElementById('texto-saudacao').innerHTML = `${msg}, <span>${usuarioAtivo}</span>!`;
 
             popularFiltroMeses();
