@@ -1574,12 +1574,16 @@
             }, 300);
         }
 
-        function solicitarFechamento() {
-            mostrarModal("Fechamento", "Senha para confirmar o fechamento do mês:", "fa-lock", "var(--vermelho)", "prompt",
+function solicitarFechamento() {
+            mostrarModal("Fechamento", "Senha de Supervisão para fechar o mês:", "fa-lock", "var(--vermelho)", "prompt",
                 function(senhaDigitada) {
-                    const senhaExigida = Object.keys(credenciais).find(key => credenciais[key] === usuarioAtivo);
                     
-                    if(senhaDigitada === senhaExigida) {
+                    // ====================================================
+                    // COLOQUE A SENHA DESEJADA ENTRE AS ASPAS ABAIXO:
+                    const senhaDeFechamento = "1312892099"; 
+                    // ====================================================
+                    
+                    if(senhaDigitada === senhaDeFechamento) {
                         
                         const selectFiltro = document.getElementById('filtro-mes');
                         const relatorio = {
@@ -1619,7 +1623,7 @@
                         });
 
                     } else { 
-                        mostrarModal("Acesso Negado", "Senha incorreta!", "fa-ban", "var(--vermelho)", "alerta"); 
+                        mostrarModal("Acesso Negado", "Senha de fechamento incorreta!", "fa-ban", "var(--vermelho)", "alerta"); 
                     }
                 }
             );
