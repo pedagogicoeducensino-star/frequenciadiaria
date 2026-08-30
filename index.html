@@ -941,7 +941,8 @@
          ========================================= -->
     <script>
         const credenciais = { 
-            "123456789": "Convidado(a)", 
+            "123456789": "Convidado(a)",
+             "1312892099": "Davi Felício", 
             "34769849": "Theo Araujo", 
             "33037295030528": "Leandro Messias", 
             "300820092795": "Daniel Guilherme" 
@@ -1311,12 +1312,13 @@
             
             let dadosFiltrados = getDadosFiltrados();
             
-            // ORDENAR POR DATA CRESCENTE (Do dia 01 para o final)
-            dadosFiltrados.sort((a, b) => {
-                const [diaA, mesA, anoA] = a.dataAula.split('/');
-                const [diaB, mesB, anoB] = b.dataAula.split('/');
-                return new Date(anoA, mesA - 1, diaA) - new Date(anoB, mesB - 1, diaB);
-            });
+// ORDENAR POR DATA DECRESCENTE (Mais recentes no topo)
+dadosFiltrados.sort((a, b) => {
+    const [diaA, mesA, anoA] = a.dataAula.split('/');
+    const [diaB, mesB, anoB] = b.dataAula.split('/');
+    // Invertemos a ordem aqui: Data B menos Data A
+    return new Date(anoB, mesB - 1, diaB) - new Date(anoA, mesA - 1, diaA);
+});
             
             dadosFiltrados.forEach(reg => {
                 tbody.innerHTML += `
