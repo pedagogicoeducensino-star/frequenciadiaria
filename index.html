@@ -1186,36 +1186,36 @@
             document.getElementById('tot-pres').value = pres + rep;
         }
 
-        function sincronizarComPlanilha() {
-            const aviso = document.getElementById('aviso-salvando');
-            aviso.style.display = 'block';
-            
-            fetch(URL_DO_APPS_SCRIPT, {
-                method: 'POST',
-                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                body: JSON.stringify({ acao: 'sincronizar', dados: baseDeDados })
-            })
-            .then(res => res.text())
-            .then(texto => {
-                try {
-                    let resposta = JSON.parse(texto);
-                    if (resposta.status === 'sucesso') {
-                        aviso.style.display = 'none';
-                    } else {
-                        throw new Error(resposta.mensagem);
-                    }
-                } catch(e) {
-                    throw new Error("O servidor retornou uma resposta inválida ao salvar.");
-                }
-            })
-            .catch(e => {
-                aviso.innerText = "Erro: " + e.message;
-                setTimeout(() => {
-                    aviso.style.display = 'none';
-                    aviso.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Sincronizando dados...';
-                }, 4000);
-            });
+       function enviarAcaoParaServidor(acaoDesejada, dadosDaAcao) {
+    const aviso = document.getElementById('aviso-salvando');
+    aviso.style.display = 'block';
+    
+    fetch(URL_DO_APPS_SCRIPT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({ acao: acaoDesejada, dados: dadosDaAcao })
+    })
+    .then(res => res.text())
+    .then(texto => {
+        try {
+            let resposta = JSON.parse(texto);
+            if (resposta.status === 'sucesso') {
+                aviso.style.display = 'none';
+            } else {
+                throw new Error(resposta.mensagem);
+            }
+        } catch(e) {
+            throw new Error("O servidor retornou uma resposta inválida ao salvar.");
         }
+    })
+    .catch(e => {
+        aviso.innerText = "Erro: " + e.message;
+        setTimeout(() => {
+            aviso.style.display = 'none';
+            aviso.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Sincronizando dados...';
+        }, 4000);
+    });
+}
 
         function validarRegistro() {
             const turma = document.getElementById('turma').value;
@@ -1260,45 +1260,45 @@
             }
         }
 
-        function executarSalvamentoRegistro(turma, dataFormatada, mat, pres) {
-            const rep = parseInt(document.getElementById('rep').value) || 0;
-            const agora = new Date();
-            
-            const novoRegistro = {
-                id: idSendoEditado ? idSendoEditado : Date.now(), 
-                colaborador: usuarioAtivo,
-                dataReg: `${agora.toLocaleDateString('pt-BR')} às ${agora.toLocaleTimeString('pt-BR').substring(0,5)}`,
-                dataAula: dataFormatada, 
-                turma: turma, 
-                mat: mat, 
-                pres: pres, 
-                rep: rep, 
-                totPres: parseInt(document.getElementById('tot-pres').value), 
-                faltas: parseInt(document.getElementById('faltas').value)
-            };
+function executarSalvamentoRegistro(turma, dataFormatada, mat, pres) {
+    const rep = parseInt(document.getElementById('rep').value) || 0;
+    const agora = new Date();
+    
+    const novoRegistro = {
+        id: idSendoEditado ? idSendoEditado : Date.now(), 
+        colaborador: usuarioAtivo,
+        dataReg: `${agora.toLocaleDateString('pt-BR')} às ${agora.toLocaleTimeString('pt-BR').substring(0,5)}`,
+        dataAula: dataFormatada, 
+        turma: turma, 
+        mat: mat, 
+        pres: pres, 
+        rep: rep, 
+        totPres: parseInt(document.getElementById('tot-pres').value), 
+        faltas: parseInt(document.getElementById('faltas').value)
+    };
 
-            if (idSendoEditado) {
-                const index = baseDeDados.findIndex(r => r.id === idSendoEditado);
-                baseDeDados[index] = novoRegistro;
-                idSendoEditado = null; 
-                document.getElementById('btn-registrar-freq').innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Registrar Frequência';
-                document.getElementById('btn-registrar-freq').classList.replace('btn-marrom', 'btn-laranja');
-            } else { 
-                baseDeDados.push(novoRegistro); 
-            }
+    if (idSendoEditado) {
+        const index = baseDeDados.findIndex(r => r.id === idSendoEditado);
+        baseDeDados[index] = novoRegistro;
+        idSendoEditado = null; 
+        document.getElementById('btn-registrar-freq').innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Registrar Frequência';
+        document.getElementById('btn-registrar-freq').classList.replace('btn-marrom', 'btn-laranja');
+    } else { 
+        baseDeDados.push(novoRegistro); 
+    }
 
-            // LIMPA OS CAMPOS
-            document.getElementById('mat').value = ''; 
-            document.getElementById('pres').value = ''; 
-            document.getElementById('rep').value = '0';
-            
-            // RESETA A TURMA PARA A OPÇÃO "A" (Índice 0)
-            document.getElementById('turma').selectedIndex = 0;
-            
-            calcular(); 
-            atualizarTela(); 
-            sincronizarComPlanilha();
-        }
+    // LIMPA OS CAMPOS
+    document.getElementById('mat').value = ''; 
+    document.getElementById('pres').value = ''; 
+    document.getElementById('rep').value = '0';
+    document.getElementById('turma').selectedIndex = 0;
+    
+    calcular(); 
+    atualizarTela(); 
+    
+    // AVISA AO SERVIDOR APENAS DO REGISTRO NOVO/EDITADO
+    enviarAcaoParaServidor('salvarRegistro', novoRegistro);
+}
 
         function atualizarTela() { 
             renderizarTabela(); 
@@ -1340,20 +1340,23 @@ dadosFiltrados.sort((a, b) => {
             });
         }
 
-        function confirmarExclusao(id) {
-            mostrarModal("Exclusão", "Senha para confirmar exclusão:", "fa-trash", "var(--vermelho)", "prompt", 
-                function(senhaDigitada) {
-                    const senhaExigida = Object.keys(credenciais).find(key => credenciais[key] === usuarioAtivo);
-                    if (senhaDigitada === senhaExigida) {
-                        baseDeDados = baseDeDados.filter(r => r.id !== id);
-                        atualizarTela(); 
-                        sincronizarComPlanilha();
-                    } else { 
-                        mostrarModal("Erro", "Senha incorreta!", "fa-circle-xmark", "var(--vermelho)", "alerta"); 
-                    }
-                }
-            );
+function confirmarExclusao(id) {
+    mostrarModal("Exclusão", "Senha para confirmar exclusão:", "fa-trash", "var(--vermelho)", "prompt", 
+        function(senhaDigitada) {
+            const senhaExigida = Object.keys(credenciais).find(key => credenciais[key] === usuarioAtivo);
+            if (senhaDigitada === senhaExigida) {
+                // Tira da tela
+                baseDeDados = baseDeDados.filter(r => r.id !== id);
+                atualizarTela(); 
+                
+                // Manda excluir direto na planilha
+                enviarAcaoParaServidor('excluirRegistro', id);
+            } else { 
+                mostrarModal("Erro", "Senha incorreta!", "fa-circle-xmark", "var(--vermelho)", "alerta"); 
+            }
         }
+    );
+}
 
         function editar(id) {
             const reg = baseDeDados.find(r => r.id === id);
