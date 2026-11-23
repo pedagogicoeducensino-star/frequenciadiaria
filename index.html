@@ -2964,28 +2964,37 @@ function construirHTMLFicha(grupo, idx, paraImpressao = false) {
                 </tr>
             ` : '';
 
+            // Ajusta a largura da coluna ALUNO(A) conforme o maior nome da turma e transfere a sobra para ASSINATURA
+            const maiorNomeChars = grupo.alunos.reduce((max, al) => Math.max(max, (al.aluno || '').length), 0);
+            const larguraAluno = maiorNomeChars > 0
+                ? Math.min(32, Math.max(18, Math.ceil(maiorNomeChars * 0.45 + 2.5)))
+                : 22; // largura padrão se a ficha estiver sem alunos
+
+            const larguraAssinaturaPratica = (100 - 3 - 7 - 20 - larguraAluno).toFixed(1);
+            const larguraAssinaturaRegular = (100 - 3 - 7 - 19 - larguraAluno).toFixed(1);
+
             const theadHTML = ehPratica ? `
                 <tr>
-                    <th rowspan="2" style="width: 3.5%;">O/</th>
-                    <th rowspan="2" style="width: 30%;">ALUNO(A)</th>
-                    <th rowspan="2" style="width: 8%;">MATRÍCULA</th>
-                    <th rowspan="2" style="width: 37.5%;">ASSINATURA DO ALUNO(A)</th>
-                    <th colspan="5" style="width: 21%;">QUADRO DA AVALIAÇÃO DOCENTE</th>
+                    <th rowspan="2" style="width: 3%;">O/</th>
+                    <th rowspan="2" style="width: ${larguraAluno}%;">ALUNO(A)</th>
+                    <th rowspan="2" style="width: 7%;">MATRÍCULA</th>
+                    <th rowspan="2" style="width: ${larguraAssinaturaPratica}%;">ASSINATURA DO ALUNO(A)</th>
+                    <th colspan="5" style="width: 20%;">QUADRO DA AVALIAÇÃO DOCENTE</th>
                 </tr>
                 <tr>
-                    <th style="width: 4.2%;">PA</th>
-                    <th style="width: 4.2%;">CP</th>
-                    <th style="width: 4.2%;">SO</th>
-                    <th style="width: 4.2%;">AU</th>
-                    <th style="width: 4.2%;">CO</th>
+                    <th style="width: 4%;">PA</th>
+                    <th style="width: 4%;">CP</th>
+                    <th style="width: 4%;">SO</th>
+                    <th style="width: 4%;">AU</th>
+                    <th style="width: 4%;">CO</th>
                 </tr>
             ` : `
                 <tr>
-                    <th style="width: 3.5%;">O/</th>
-                    <th style="width: 31.5%;">ALUNO(A)</th>
-                    <th style="width: 8%;">MATRÍCULA</th>
-                    <th style="width: 36%;">ASSINATURA DO ALUNO(A)</th>
-                    <th style="width: 21%;">OBSERVAÇÕES RELEVANTES</th>
+                    <th style="width: 3%;">O/</th>
+                    <th style="width: ${larguraAluno}%;">ALUNO(A)</th>
+                    <th style="width: 7%;">MATRÍCULA</th>
+                    <th style="width: ${larguraAssinaturaRegular}%;">ASSINATURA DO ALUNO(A)</th>
+                    <th style="width: 19%;">OBSERVAÇÕES RELEVANTES</th>
                 </tr>
             `;
 
@@ -4268,3 +4277,4 @@ function construirHTMLFicha(grupo, idx, paraImpressao = false) {
     </script>
 </body>
 </html>
+
