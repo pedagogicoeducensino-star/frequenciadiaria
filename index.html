@@ -721,6 +721,7 @@
             padding: 14px;
             background: #EBEDEF;
             overflow-x: auto;
+            position: relative;
         }
 
         /* =========================================
@@ -836,6 +837,12 @@
             text-align: left;
         }
 
+        /* Práticas com 20 linhas: altura mais confortável para assinatura */
+        .ficha-folha.ficha-pratica .ficha-tabela-alunos td {
+            height: 22px;
+            font-size: 10px !important;
+        }
+
         .ficha-tabela-alunos td.col-ord,
         .ficha-tabela-alunos td.col-mat {
             text-align: center;
@@ -850,6 +857,35 @@
             height: auto;
             border-top: 1.5px solid #000 !important;
             border-bottom: 1.5px solid #000 !important;
+        }
+
+        /* COLUNA VERTICAL FIXA DE ENCAMINHAMENTO (SOMENTE NA TELA) */
+        .ficha-tabela-alunos th.col-encaminhar-fixa {
+            position: sticky !important;
+            right: 0;
+            z-index: 4;
+            width: 92px;
+            min-width: 92px;
+            background: #5D4037 !important;
+            color: #FFFFFF !important;
+            border-left: 2px solid #F39C12 !important;
+            font-family: 'Poppins', sans-serif !important;
+            font-size: 9px !important;
+            letter-spacing: 0.3px;
+            box-shadow: -3px 0 6px rgba(0,0,0,0.08);
+        }
+
+        .ficha-tabela-alunos td.col-encaminhar-fixa {
+            position: sticky;
+            right: 0;
+            z-index: 3;
+            width: 92px;
+            min-width: 92px;
+            text-align: center !important;
+            background: #FFFDF7 !important;
+            border-left: 2px solid #F39C12 !important;
+            padding: 1px 4px !important;
+            box-shadow: -3px 0 6px rgba(0,0,0,0.06);
         }
 
         .ficha-rodape {
@@ -898,20 +934,22 @@
         }
 
         .btn-encaminhar-aluno {
-            border: 1px solid #D5DBDB;
-            background: #FFF9EB;
+            border: 1px solid #E5C17B;
+            background: #FFF8E6;
             color: var(--marrom);
-            border-radius: 5px;
-            padding: 2px 7px;
-            font-size: 10px;
+            border-radius: 4px;
+            padding: 1px 7px;
+            font-family: 'Poppins', sans-serif !important;
+            font-size: 9.5px;
             font-weight: 600;
             cursor: pointer;
             display: inline-flex;
             align-items: center;
+            justify-content: center;
             gap: 4px;
-            margin-left: 6px;
             transition: 0.2s;
             vertical-align: middle;
+            white-space: nowrap;
         }
 
         .btn-encaminhar-aluno:hover {
@@ -1626,10 +1664,6 @@
                     <input type="checkbox" id="ger-marcar-elos" onchange="renderizarFichasGeradas()">
                     Sinalizar "Estação Elos" em Observações
                 </label>
-                <label>
-                    <input type="checkbox" id="ger-unir-praticas" onchange="renderizarFichasGeradas()">
-                    Unir Boreal + Práticas no mesmo horário
-                </label>
             </div>
 
             <div id="status-varredura" class="status-varredura"></div>
@@ -1642,8 +1676,8 @@
                 <span class="badge-contagem" id="badge-regulares">0 turmas</span>
             </button>
             <button type="button" class="aba-modelo-btn" id="aba-btn-praticas" onclick="selecionarModeloFicha('praticas')">
-                <span><i class="fa-solid fa-flask" style="color:var(--marrom); margin-right:6px;"></i> Práticas Profissionalizantes (Boreal / Práticas)</span>
-                <span class="badge-contagem" id="badge-praticas">0 turmas</span>
+                <span><i class="fa-solid fa-flask" style="color:var(--marrom); margin-right:6px;"></i> Práticas Profissionalizantes (Ficha Editável)</span>
+                <span class="badge-contagem" id="badge-praticas">0 alunos</span>
             </button>
         </div>
 
@@ -1857,6 +1891,23 @@
 
         const URL_LOGO_EDUC = "https://i.postimg.cc/65SQc2MX/Logo-Educ-Completa.png";
 
+        const SALAS_OFICIAIS = [
+            "Laboratório Boreal e Práticas Profissionalizantes",
+            "Laboratório de Ensino Continuado Éter",
+            "Laboratório Estação Elos"
+        ];
+
+        const HORARIOS_OFICIAIS = [
+            "07:00 às 09:00",
+            "09:00 às 11:00",
+            "11:00 às 13:00",
+            "13:00 às 15:00",
+            "15:00 às 17:00",
+            "17:00 às 19:00"
+        ];
+
+        const TURMAS_LETRAS = ["A", "B", "C", "D", "E", "F"];
+
         const credenciais = { 
             "031792": "Wesley Luiz",
             "1312892099": "Davi Felício", 
@@ -1876,25 +1927,25 @@
         let idSendoEditado = null; 
         let funcaoCallbackModal = null;
 
-   // Estado do Gerador de Listas (independente da planilha)
+        // Estado do Gerador de Listas (independente da planilha)
         let alunosImportados = [];
         let modeloFichaAtivo = 'regulares';
         let fichasAtuaisCache = [];
         let turmasLancadasSessao = {};
         let tipoCadastroNomesAtivo = 'instrutores';
 
-        // Estado da Ficha de Práticas Profissionalizantes (100% editável)
+        // Estado da Ficha de Práticas Profissionalizantes (padronizada com 20 linhas, sem reposições e editável)
         let fichaPraticaEditavel = {
             inicializada: false,
-            sala: 'LABORATÓRIO BOREAL / PRÁTICAS PROFISSIONALIZANTES',
+            sala: SALAS_OFICIAIS[0],
             data: '',
             mesRef: '',
             horario: '07:00 às 09:00',
-            turma: 'PRÁTICAS - SEGUNDA-FEIRA',
+            turmaLetra: 'A',
             periodo: 'MATUTINO',
-            instrutor: '',
+            professor: '',
             emitidoPor: '',
-            minLinhas: 35,
+            minLinhas: 20,
             alunos: []
         };
 
@@ -2185,7 +2236,7 @@
             if (!document.getElementById('ger-data').value) {
                 inicializarCamposGerador();
             }
-            if (alunosImportados.length > 0) {
+            if (alunosImportados.length > 0 || modeloFichaAtivo === 'praticas') {
                 renderizarFichasGeradas();
             }
             window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -2295,10 +2346,8 @@
             const n = limparResiduosRodape(nome);
             if (n.length < 3) return false;
             if (ehTextoLixoRodapeCabecalho(n)) return false;
-            // Deve conter pelo menos 3 letras e não ser um número isolado
             const letras = (n.match(/[A-Za-zÀ-ÿ]/g) || []).length;
             if (letras < 3) return false;
-            // Evita cabeçalhos de coluna
             const low = removerAcentos(n).toLowerCase();
             if (['aluno', 'aluno(a)', 'nome', 'contrato', 'matricula', 'sala', 'horario', 'dia'].includes(low)) return false;
             return true;
@@ -2331,7 +2380,7 @@
             return `${padHora(m[1])} às ${padHora(m[2])}`;
         }
 
-     function classificarSala(nomeSala) {
+        function classificarSala(nomeSala) {
             const s = removerAcentos(nomeSala).toLowerCase();
             if (s.includes('boreal')) return { modelo: 'praticas', tipo: 'boreal' };
             if (s.includes('pratica')) return { modelo: 'praticas', tipo: 'praticas' };
@@ -2401,14 +2450,11 @@
                         }))
                         .filter(it => {
                             if (!it.str) return false;
-                            // Filtra rodapés/cabeçalhos já no nível do item
                             if (ehTextoLixoRodapeCabecalho(it.raw)) return false;
-                            // Descarta margem extrema inferior/superior se não for número de matrícula
                             if (it.y < 22 || it.y > pageHeight - 18) return false;
                             return true;
                         });
 
-                    // Agrupa itens na mesma linha visual (tolerância vertical de 4.5pt)
                     const linhasPagina = [];
                     itens.forEach(item => {
                         let linha = linhasPagina.find(l => Math.abs(l.y - item.y) <= 4.5);
@@ -2422,7 +2468,6 @@
                     linhasPagina.sort((a, b) => b.y - a.y);
                     linhasPagina.forEach(l => l.itens.sort((a, b) => a.x - b.x));
 
-                    // Detecta posições X das colunas a partir do cabeçalho da tabela
                     if (!colX) {
                         for (const l of linhasPagina) {
                             const textoLinha = removerAcentos(l.itens.map(i => i.str).join(' ')).toLowerCase();
@@ -2482,7 +2527,6 @@
                 const textoCompleto = linha.itens.map(i => i.str).join(' ').trim();
                 const textoLimpo = removerAcentos(textoCompleto).toLowerCase();
 
-                // Ignora cabeçalhos repetidos e qualquer linha de rodapé
                 if (
                     ehTextoLixoRodapeCabecalho(textoCompleto) ||
                     (textoLimpo.includes('dia') && textoLimpo.includes('horario') && textoLimpo.includes('aluno'))
@@ -2506,7 +2550,6 @@
                 let txtAluno = limparResiduosRodape(cAluno.join(' ').trim());
                 let txtContrato = cContrato.join(' ').trim();
 
-                // Se a matrícula numérica ficou colada ao fim da coluna Aluno
                 if (!txtContrato && /\s(\d{2,7})$/.test(txtAluno)) {
                     const m = txtAluno.match(/^(.*)\s(\d{2,7})$/);
                     txtAluno = m[1].trim();
@@ -2533,11 +2576,9 @@
                     ultimaLinhaTinhaSala = false;
                 }
 
-                // Extrai somente a matrícula numérica válida (ex.: 2593, 3304)
                 const matchMat = txtContrato.match(/\b(\d{2,7})\b/);
                 const matriculaLimpa = matchMat ? matchMat[1] : '';
 
-                // CRITÉRIO PRINCIPAL: Horário + Matrícula numérica + Nome válido
                 if (diaAtual && horarioAtual && ehMatriculaValida(matriculaLimpa) && ehNomeAlunoValido(txtAluno)) {
                     lista.push({
                         dia: diaAtual,
@@ -2549,7 +2590,6 @@
                         y: linha.y
                     });
                 } else if (
-                    // Continuação de nome longo quebrado na linha imediatamente abaixo (mesma página, sem números, sem lixo)
                     !matriculaLimpa &&
                     !mudouGrupo &&
                     !txtSala &&
@@ -2570,7 +2610,7 @@
             return lista.map(item => ({
                 dia: item.dia,
                 horario: item.horario,
-                sala: (item.salaRef.nome || 'Laboratório não informado').trim(),
+                sala: (item.salaRef.nome || 'Laboratório de Ensino Continuado Éter').trim(),
                 aluno: item.aluno.replace(/\s+/g, ' ').trim(),
                 contrato: item.contrato.trim()
             }));
@@ -2646,17 +2686,12 @@
         }
 
         function montarGruposDoDia(diaSelecionado) {
-            const unirPraticas = document.getElementById('ger-unir-praticas').checked;
             const alunosDia = alunosImportados.filter(a => a.dia === diaSelecionado);
-
             const gruposRegularesMap = {};
-            const gruposPraticasMap = {};
 
             alunosDia.forEach(reg => {
                 const infoSala = classificarSala(reg.sala);
-
                 if (infoSala.modelo === 'regulares') {
-                    // Éter + Estação Elos no mesmo dia e horário se unem
                     const chave = reg.horario;
                     if (!gruposRegularesMap[chave]) {
                         gruposRegularesMap[chave] = {
@@ -2671,51 +2706,29 @@
                     gruposRegularesMap[chave].salasSet.add(reg.sala);
                     gruposRegularesMap[chave].tiposSet.add(infoSala.tipo);
                     gruposRegularesMap[chave].alunos.push({ ...reg, tipoSala: infoSala.tipo });
-                } else {
-                    // Práticas Profissionalizantes / Laboratório Boreal
-                    const chave = unirPraticas ? reg.horario : `${reg.horario}__${reg.sala}`;
-                    if (!gruposPraticasMap[chave]) {
-                        gruposPraticasMap[chave] = {
-                            modelo: 'praticas',
-                            dia: reg.dia,
-                            horario: reg.horario,
-                            salasSet: new Set(),
-                            tiposSet: new Set(),
-                            alunos: []
-                        };
-                    }
-                    gruposPraticasMap[chave].salasSet.add(reg.sala);
-                    gruposPraticasMap[chave].tiposSet.add(infoSala.tipo);
-                    gruposPraticasMap[chave].alunos.push({ ...reg, tipoSala: infoSala.tipo });
                 }
             });
 
-            const finalizarListaGrupos = (mapa) => {
-                return Object.values(mapa)
-                    .map(g => {
-                        // Evita duplicata exata pela matrícula dentro do mesmo horário
-                        const vistos = new Set();
-                        const unicos = [];
-                        g.alunos.forEach(a => {
-                            const k = `${a.contrato}|${removerAcentos(a.aluno).toLowerCase()}`;
-                            if (!vistos.has(k)) {
-                                vistos.add(k);
-                                unicos.push(a);
-                            }
-                        });
-                        unicos.sort((a, b) => a.aluno.localeCompare(b.aluno, 'pt-BR'));
-                        g.alunos = unicos;
-                        g.salas = Array.from(g.salasSet);
-                        g.tipos = Array.from(g.tiposSet);
-                        return g;
-                    })
-                    .sort((a, b) => a.horario.localeCompare(b.horario));
-            };
+            const regulares = Object.values(gruposRegularesMap)
+                .map(g => {
+                    const vistos = new Set();
+                    const unicos = [];
+                    g.alunos.forEach(a => {
+                        const k = `${a.contrato}|${removerAcentos(a.aluno).toLowerCase()}`;
+                        if (!vistos.has(k)) {
+                            vistos.add(k);
+                            unicos.push(a);
+                        }
+                    });
+                    unicos.sort((a, b) => a.aluno.localeCompare(b.aluno, 'pt-BR'));
+                    g.alunos = unicos;
+                    g.salas = Array.from(g.salasSet);
+                    g.tipos = Array.from(g.tiposSet);
+                    return g;
+                })
+                .sort((a, b) => a.horario.localeCompare(b.horario));
 
-            return {
-                regulares: finalizarListaGrupos(gruposRegularesMap),
-                praticas: finalizarListaGrupos(gruposPraticasMap)
-            };
+            return { regulares };
         }
 
         function formatarNomeSalaCabecalho(grupo) {
@@ -2729,15 +2742,20 @@
             return grupo.salas.join(' / ').toUpperCase();
         }
 
-      function inicializarFichaPraticaSeNecessario() {
+        function obterDiaSemanaPorISO(dataIso) {
+            if (!dataIso) return '';
+            const [ano, mes, dia] = dataIso.split('-').map(Number);
+            const dataObj = new Date(ano, mes - 1, dia);
+            const diasNomes = ["DOMINGO", "SEGUNDA-FEIRA", "TERÇA-FEIRA", "QUARTA-FEIRA", "QUINTA-FEIRA", "SEXTA-FEIRA", "SÁBADO"];
+            return diasNomes[dataObj.getDay()] || '';
+        }
+
+        function inicializarFichaPraticaSeNecessario() {
             if (fichaPraticaEditavel.inicializada) return;
             const dataIso = document.getElementById('ger-data').value;
-            const diaSemana = (document.getElementById('ger-dia-semana').value || 'SEGUNDA-FEIRA').toUpperCase();
             const mesRef = document.getElementById('ger-mes-ref').value || 'NOVEMBRO';
             fichaPraticaEditavel.data = dataIso;
             fichaPraticaEditavel.mesRef = mesRef;
-            fichaPraticaEditavel.turma = `PRÁTICAS - ${diaSemana}`;
-            fichaPraticaEditavel.instrutor = document.getElementById('ger-instrutor').value || '';
             fichaPraticaEditavel.emitidoPor = document.getElementById('ger-emitido-por').value || '';
             fichaPraticaEditavel.inicializada = true;
         }
@@ -2798,15 +2816,15 @@
                 mostrarAvisoRapido(`${al.aluno} removido(a) da ficha de Práticas.`);
             }
 
-            // Atualiza visual dos botões desse aluno sem recarregar a página nem fechar a visualização
+            // Atualiza visual dos botões desse aluno na coluna fixa e no painel rápido
             document.querySelectorAll(`[data-btn-enc="${idxTurma}-${idxAluno}"]`).forEach(btn => {
                 btn.classList.toggle('encaminhado', encaminhadoAgora);
                 btn.title = encaminhadoAgora
                     ? 'Já encaminhado para Práticas (clique para remover)'
                     : 'Encaminhar aluno para ficha de Práticas';
                 btn.innerHTML = encaminhadoAgora
-                    ? '<i class="fa-solid fa-check"></i> Em Práticas'
-                    : '<i class="fa-solid fa-share"></i>';
+                    ? '<i class="fa-solid fa-check"></i> Prática'
+                    : '<i class="fa-solid fa-share"></i> Enviar';
             });
 
             atualizarBadgePraticas();
@@ -2814,74 +2832,95 @@
 
         function construirHTMLFicha(grupo, idx, paraImpressao = false) {
             const custom = grupo.customMeta || null;
+            const ehPratica = grupo.modelo === 'praticas';
+            const mostrarColunaFixa = !paraImpressao && !ehPratica;
 
             const dataIso = custom ? custom.data : document.getElementById('ger-data').value;
             const [ano, mes, dia] = dataIso ? dataIso.split('-') : ['', '', ''];
             const dataBR = dataIso ? `${dia}/${mes}/${ano}` : '';
             const mesRef = custom ? custom.mesRef : (document.getElementById('ger-mes-ref').value || '');
-            const instrutor = (custom ? custom.instrutor : (document.getElementById('ger-instrutor').value || '')).toUpperCase();
+            const responsavelLabel = ehPratica ? 'PROFESSOR(A):' : 'INSTRUTOR(A):';
+            const responsavelNome = (custom ? custom.professor : (document.getElementById('ger-instrutor').value || '')).toUpperCase();
             const emitidoPor = (custom ? custom.emitidoPor : (document.getElementById('ger-emitido-por').value || '')).toUpperCase();
-            const minLinhas = Math.max(10, parseInt(custom ? custom.minLinhas : document.getElementById('ger-min-linhas').value, 10) || 35);
+            const minLinhasPadrao = ehPratica ? 20 : 35;
+            const minLinhas = Math.max(5, parseInt(custom ? custom.minLinhas : document.getElementById('ger-min-linhas').value, 10) || minLinhasPadrao);
             const marcarElos = document.getElementById('ger-marcar-elos').checked;
 
             const infoTurma = mapearTurmaSistema(grupo.horario || '');
-            const diaUpper = (grupo.dia || '').toUpperCase();
+            const diaUpper = (grupo.dia || obterDiaSemanaPorISO(dataIso) || '').toUpperCase();
             const turmaLabel = custom
-                ? custom.turma.toUpperCase()
+                ? (diaUpper ? `${custom.turmaLetra} - ${diaUpper}` : `TURMA ${custom.turmaLetra}`)
                 : (infoTurma.letra ? `${infoTurma.letra} - ${diaUpper}` : diaUpper);
             const periodoLabel = custom ? custom.periodo.toUpperCase() : infoTurma.periodo;
             const salaCabecalho = custom ? custom.sala.toUpperCase() : formatarNomeSalaCabecalho(grupo);
             const horarioLabel = (custom ? custom.horario : grupo.horario || '').toUpperCase();
 
-            const tituloFicha = grupo.modelo === 'praticas'
+            const tituloFicha = ehPratica
                 ? 'REGISTRO DE FREQUÊNCIA DIÁRIA — PRÁTICAS PROFISSIONALIZANTES'
                 : 'REGISTRO DE FREQUÊNCIA DIÁRIA';
 
-            const totalLinhasRegulares = Math.max(minLinhas, grupo.alunos.length);
+            const totalLinhas = Math.max(minLinhas, grupo.alunos.length);
 
             let linhasHTML = '';
-            for (let i = 0; i < totalLinhasRegulares; i++) {
+            for (let i = 0; i < totalLinhas; i++) {
                 const al = grupo.alunos[i];
-                const obs = (al && marcarElos && al.tipoSala === 'elos') ? 'Estação Elos' : '';
+                const obs = (!ehPratica && al && marcarElos && al.tipoSala === 'elos') ? 'Estação Elos' : '';
 
-                let botaoEncaminhar = '';
-                if (!paraImpressao && grupo.modelo === 'regulares' && al) {
-                    const jaFoi = alunoEstaNaPratica(al.aluno, al.contrato);
-                    botaoEncaminhar = `
-                        <button type="button"
-                            class="btn-encaminhar-aluno ${jaFoi ? 'encaminhado' : ''}"
-                            data-btn-enc="${idx}-${i}"
-                            title="${jaFoi ? 'Já encaminhado para Práticas (clique para remover)' : 'Encaminhar aluno para ficha de Práticas'}"
-                            onclick="alternarEncaminharAluno(${idx}, ${i})">
-                            ${jaFoi ? '<i class="fa-solid fa-check"></i> Em Práticas' : '<i class="fa-solid fa-share"></i>'}
-                        </button>
-                    `;
+                let celulaEncaminhar = '';
+                if (mostrarColunaFixa) {
+                    if (al) {
+                        const jaFoi = alunoEstaNaPratica(al.aluno, al.contrato);
+                        celulaEncaminhar = `
+                            <td class="col-encaminhar-fixa">
+                                <button type="button"
+                                    class="btn-encaminhar-aluno ${jaFoi ? 'encaminhado' : ''}"
+                                    data-btn-enc="${idx}-${i}"
+                                    title="${jaFoi ? 'Já encaminhado para Práticas (clique para remover)' : 'Encaminhar aluno para ficha de Práticas'}"
+                                    onclick="alternarEncaminharAluno(${idx}, ${i})">
+                                    ${jaFoi ? '<i class="fa-solid fa-check"></i> Prática' : '<i class="fa-solid fa-share"></i> Enviar'}
+                                </button>
+                            </td>
+                        `;
+                    } else {
+                        celulaEncaminhar = `<td class="col-encaminhar-fixa"></td>`;
+                    }
                 }
 
                 linhasHTML += `
                     <tr>
                         <td class="col-ord">${i + 1}</td>
-                        <td>${al ? escaparHTML(al.aluno) : ''}${botaoEncaminhar}</td>
+                        <td>${al ? escaparHTML(al.aluno) : ''}</td>
                         <td class="col-mat">${al ? escaparHTML(al.contrato) : ''}</td>
                         <td></td>
                         <td>${obs}</td>
+                        ${celulaEncaminhar}
                     </tr>
                 `;
             }
 
-            linhasHTML += `
-                <tr class="ficha-faixa-rep">
-                    <td colspan="5">REPOSIÇÕES DO DIA</td>
-                </tr>
-                <tr><td class="col-ord">1</td><td></td><td class="col-mat"></td><td></td><td></td></tr>
-                <tr><td class="col-ord">2</td><td></td><td class="col-mat"></td><td></td><td></td></tr>
-            `;
+            // Somente aulas regulares possuem seção de REPOSIÇÕES DO DIA
+            if (!ehPratica) {
+                linhasHTML += `
+                    <tr class="ficha-faixa-rep">
+                        <td colspan="5">REPOSIÇÕES DO DIA</td>
+                        ${mostrarColunaFixa ? '<td class="col-encaminhar-fixa"></td>' : ''}
+                    </tr>
+                    <tr>
+                        <td class="col-ord">1</td><td></td><td class="col-mat"></td><td></td><td></td>
+                        ${mostrarColunaFixa ? '<td class="col-encaminhar-fixa"></td>' : ''}
+                    </tr>
+                    <tr>
+                        <td class="col-ord">2</td><td></td><td class="col-mat"></td><td></td><td></td>
+                        ${mostrarColunaFixa ? '<td class="col-encaminhar-fixa"></td>' : ''}
+                    </tr>
+                `;
+            }
 
             const agora = new Date();
             const carimbo = `${agora.toLocaleDateString('pt-BR')} ${agora.toLocaleTimeString('pt-BR').substring(0, 5)}`;
 
             return `
-                <div class="ficha-folha" id="ficha-folha-${idx}">
+                <div class="ficha-folha ${ehPratica ? 'ficha-pratica' : ''}" id="ficha-folha-${idx}">
                     <table class="ficha-cabecalho-box">
                         <tr>
                             <td class="ficha-logo-cell">
@@ -2907,7 +2946,7 @@
                         </tr>
                         <tr>
                             <td><span class="ficha-meta-label">TURMA:</span> ${escaparHTML(turmaLabel)}</td>
-                            <td><span class="ficha-meta-label">INSTRUTOR(A):</span> ${escaparHTML(instrutor)}</td>
+                            <td><span class="ficha-meta-label">${responsavelLabel}</span> ${escaparHTML(responsavelNome)}</td>
                             <td><span class="ficha-meta-label">DATA:</span> ${escaparHTML(dataBR)}</td>
                             <td><span class="ficha-meta-label">PERÍODO:</span> ${escaparHTML(periodoLabel)}</td>
                         </tr>
@@ -2921,6 +2960,7 @@
                                 <th style="width: 8%;">MATRÍCULA</th>
                                 <th style="width: 36%;">ASSINATURA DO ALUNO(A)</th>
                                 <th style="width: 21%;">OBSERVAÇÕES RELEVANTES</th>
+                                ${mostrarColunaFixa ? '<th class="col-encaminhar-fixa"><i class="fa-solid fa-share"></i> PRÁTICA</th>' : ''}
                             </tr>
                         </thead>
                         <tbody>
@@ -2952,7 +2992,7 @@
             inicializarFichaPraticaSeNecessario();
             return {
                 modelo: 'praticas',
-                dia: '',
+                dia: obterDiaSemanaPorISO(fichaPraticaEditavel.data),
                 horario: fichaPraticaEditavel.horario,
                 salas: [fichaPraticaEditavel.sala],
                 tipos: ['praticas'],
@@ -2962,9 +3002,9 @@
                     data: fichaPraticaEditavel.data,
                     mesRef: fichaPraticaEditavel.mesRef,
                     horario: fichaPraticaEditavel.horario,
-                    turma: fichaPraticaEditavel.turma,
+                    turmaLetra: fichaPraticaEditavel.turmaLetra,
                     periodo: fichaPraticaEditavel.periodo,
-                    instrutor: fichaPraticaEditavel.instrutor,
+                    professor: fichaPraticaEditavel.professor,
                     emitidoPor: fichaPraticaEditavel.emitidoPor || (document.getElementById('ger-emitido-por').value || ''),
                     minLinhas: fichaPraticaEditavel.minLinhas
                 }
@@ -2974,18 +3014,28 @@
         function aoAlterarCampoPratica(campo, valor) {
             fichaPraticaEditavel[campo] = valor;
 
-            // Se alterou a data, atualiza automaticamente o mês e sugere a turma com o dia da semana
+            // Se alterou a data, sincroniza o mês de referência automaticamente
             if (campo === 'data' && valor) {
-                const [ano, mes, dia] = valor.split('-').map(Number);
-                const dataObj = new Date(ano, mes - 1, dia);
-                const diasNomes = ["DOMINGO", "SEGUNDA-FEIRA", "TERÇA-FEIRA", "QUARTA-FEIRA", "QUINTA-FEIRA", "SEXTA-FEIRA", "SÁBADO"];
+                const [ano, mes] = valor.split('-').map(Number);
                 const mesesNomes = ["JANEIRO", "FEVEREIRO", "MARÇO", "ABRIL", "MAIO", "JUNHO", "JULHO", "AGOSTO", "SETEMBRO", "OUTUBRO", "NOVEMBRO", "DEZEMBRO"];
                 fichaPraticaEditavel.mesRef = mesesNomes[mes - 1];
-                fichaPraticaEditavel.turma = `PRÁTICAS - ${diasNomes[dataObj.getDay()]}`;
                 const elMes = document.getElementById('pratica-mes');
-                const elTurma = document.getElementById('pratica-turma');
                 if (elMes) elMes.value = fichaPraticaEditavel.mesRef;
-                if (elTurma) elTurma.value = fichaPraticaEditavel.turma;
+            }
+
+            // Se alterou o horário, sincroniza automaticamente Turma (A-F) e Período
+            if (campo === 'horario') {
+                const info = mapearTurmaSistema(valor);
+                if (info.letra) {
+                    fichaPraticaEditavel.turmaLetra = info.letra;
+                    const elTurma = document.getElementById('pratica-turma-letra');
+                    if (elTurma) elTurma.value = info.letra;
+                }
+                if (info.periodo) {
+                    fichaPraticaEditavel.periodo = info.periodo;
+                    const elPeriodo = document.getElementById('pratica-periodo');
+                    if (elPeriodo) elPeriodo.value = info.periodo;
+                }
             }
 
             atualizarPreviewPratica();
@@ -3034,12 +3084,20 @@
             const container = document.getElementById('container-fichas-geradas');
             document.getElementById('barra-acoes-lote').style.display = 'none';
 
+            const opcoesSala = SALAS_OFICIAIS.map(s =>
+                `<option value="${escaparHTML(s)}" ${s === fichaPraticaEditavel.sala ? 'selected' : ''}>${escaparHTML(s)}</option>`
+            ).join('');
+
+            const opcoesHorario = HORARIOS_OFICIAIS.map(h =>
+                `<option value="${h}" ${h === fichaPraticaEditavel.horario ? 'selected' : ''}>${h}</option>`
+            ).join('');
+
+            const opcoesTurma = TURMAS_LETRAS.map(l =>
+                `<option value="${l}" ${l === fichaPraticaEditavel.turmaLetra ? 'selected' : ''}>Turma ${l}</option>`
+            ).join('');
+
             const mesesNomes = ["JANEIRO", "FEVEREIRO", "MARÇO", "ABRIL", "MAIO", "JUNHO", "JULHO", "AGOSTO", "SETEMBRO", "OUTUBRO", "NOVEMBRO", "DEZEMBRO"];
             const opcoesMes = mesesNomes.map(m => `<option value="${m}" ${m === fichaPraticaEditavel.mesRef ? 'selected' : ''}>${m}</option>`).join('');
-
-            const instrutores = getListaNomesStorage('instrutores');
-            const opcoesInstrutor = `<option value="">-- Selecione --</option>` +
-                instrutores.map(n => `<option value="${escaparHTML(n)}" ${n === fichaPraticaEditavel.instrutor ? 'selected' : ''}>${escaparHTML(n)}</option>`).join('');
 
             const emissores = getListaNomesStorage('emissores');
             const emissorAtual = fichaPraticaEditavel.emitidoPor || (document.getElementById('ger-emitido-por').value || '');
@@ -3047,7 +3105,7 @@
                 emissores.map(n => `<option value="${escaparHTML(n)}" ${n === emissorAtual ? 'selected' : ''}>${escaparHTML(n)}</option>`).join('');
 
             const chipsHTML = fichaPraticaEditavel.alunos.length === 0
-                ? '<span style="font-size:11.5px; color:#7F8C8D;">Nenhum aluno encaminhado ainda. Clique na seta <i class="fa-solid fa-share"></i> em qualquer ficha regular ou adicione um aluno manualmente abaixo.</span>'
+                ? '<span style="font-size:11.5px; color:#7F8C8D;">Nenhum aluno encaminhado ainda. Use a coluna fixa <strong>PRÁTICA</strong> em qualquer ficha regular ou adicione um aluno manualmente abaixo.</span>'
                 : fichaPraticaEditavel.alunos.map((a, i) => `
                     <span class="chip-aluno-pratica">
                         ${escaparHTML(a.aluno)} ${a.contrato ? `<small>(${escaparHTML(a.contrato)})</small>` : ''}
@@ -3060,7 +3118,7 @@
                     <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:12px; padding-bottom:8px; border-bottom:1px solid var(--cinza-borda);">
                         <h3 style="color:var(--marrom); font-size:14px;">
                             <i class="fa-solid fa-flask" style="color:var(--laranja); margin-right:6px;"></i>
-                            Ficha Editável de Práticas Profissionalizantes (${fichaPraticaEditavel.alunos.length} aluno(s))
+                            Ficha de Práticas Profissionalizantes (${fichaPraticaEditavel.alunos.length} aluno(s) • padrão 20 linhas, sem reposições)
                         </h3>
                         <div style="display:flex; gap:8px; flex-wrap:wrap;">
                             <button type="button" class="btn-acao btn-laranja btn-sm" onclick="imprimirFichaPraticaEditavel()">
@@ -3079,25 +3137,20 @@
 
                     <div class="grid-gerador-compacto">
                         <div class="campo" style="grid-column: span 2;">
-                            <label>SALA / LABORATÓRIO (EDITÁVEL)</label>
-                            <input type="text" list="sugestoes-salas-pratica" value="${escaparHTML(fichaPraticaEditavel.sala)}" oninput="aoAlterarCampoPratica('sala', this.value)">
-                            <datalist id="sugestoes-salas-pratica">
-                                <option value="LABORATÓRIO BOREAL">
-                                <option value="PRÁTICAS PROFISSIONALIZANTES">
-                                <option value="LABORATÓRIO BOREAL / PRÁTICAS PROFISSIONALIZANTES">
-                            </datalist>
+                            <label>SALA / LABORATÓRIO</label>
+                            <select onchange="aoAlterarCampoPratica('sala', this.value)">${opcoesSala}</select>
                         </div>
                         <div class="campo">
                             <label>DATA</label>
                             <input type="date" value="${escaparHTML(fichaPraticaEditavel.data)}" onchange="aoAlterarCampoPratica('data', this.value)">
                         </div>
                         <div class="campo">
-                            <label>HORÁRIO (EDITÁVEL)</label>
-                            <input type="text" value="${escaparHTML(fichaPraticaEditavel.horario)}" placeholder="Ex.: 09:00 às 11:00" oninput="aoAlterarCampoPratica('horario', this.value)">
+                            <label>HORÁRIO</label>
+                            <select onchange="aoAlterarCampoPratica('horario', this.value)">${opcoesHorario}</select>
                         </div>
                         <div class="campo">
-                            <label>TURMA (EDITÁVEL)</label>
-                            <input type="text" id="pratica-turma" value="${escaparHTML(fichaPraticaEditavel.turma)}" oninput="aoAlterarCampoPratica('turma', this.value)">
+                            <label>TURMA (A a F)</label>
+                            <select id="pratica-turma-letra" onchange="aoAlterarCampoPratica('turmaLetra', this.value)">${opcoesTurma}</select>
                         </div>
                         <div class="campo">
                             <label>MÊS REFERÊNCIA</label>
@@ -3105,23 +3158,23 @@
                         </div>
                         <div class="campo">
                             <label>PERÍODO</label>
-                            <select onchange="aoAlterarCampoPratica('periodo', this.value)">
+                            <select id="pratica-periodo" onchange="aoAlterarCampoPratica('periodo', this.value)">
                                 <option value="MATUTINO" ${fichaPraticaEditavel.periodo === 'MATUTINO' ? 'selected' : ''}>MATUTINO</option>
                                 <option value="VESPERTINO" ${fichaPraticaEditavel.periodo === 'VESPERTINO' ? 'selected' : ''}>VESPERTINO</option>
                                 <option value="NOTURNO" ${fichaPraticaEditavel.periodo === 'NOTURNO' ? 'selected' : ''}>NOTURNO</option>
                             </select>
                         </div>
                         <div class="campo">
-                            <label>INSTRUTOR(A)</label>
-                            <select onchange="aoAlterarCampoPratica('instrutor', this.value)">${opcoesInstrutor}</select>
+                            <label>PROFESSOR(A) (EDITÁVEL)</label>
+                            <input type="text" placeholder="Digite o nome do(a) Professor(a)" value="${escaparHTML(fichaPraticaEditavel.professor)}" oninput="aoAlterarCampoPratica('professor', this.value)">
                         </div>
                         <div class="campo">
                             <label>EMITIDO POR</label>
                             <select onchange="aoAlterarCampoPratica('emitidoPor', this.value)">${opcoesEmissor}</select>
                         </div>
                         <div class="campo">
-                            <label>LINHAS MÍN.</label>
-                            <input type="number" min="10" max="80" value="${fichaPraticaEditavel.minLinhas}" oninput="aoAlterarCampoPratica('minLinhas', this.value)">
+                            <label>LINHAS MÍN. (PADRÃO 20)</label>
+                            <input type="number" min="5" max="60" value="${fichaPraticaEditavel.minLinhas}" oninput="aoAlterarCampoPratica('minLinhas', this.value)">
                         </div>
                     </div>
 
@@ -3156,7 +3209,6 @@
             const barraLote = document.getElementById('barra-acoes-lote');
             atualizarBadgePraticas();
 
-            // Se a aba ativa for Práticas Profissionalizantes, abre direto o editor completo
             if (modeloFichaAtivo === 'praticas') {
                 if (alunosImportados.length > 0) {
                     const diaSel = document.getElementById('ger-dia-semana').value;
@@ -3252,7 +3304,7 @@
                                 data-btn-enc="${idx}-${iAl}"
                                 title="${jaFoi ? 'Já encaminhado para Práticas (clique para remover)' : 'Encaminhar para Práticas'}"
                                 onclick="alternarEncaminharAluno(${idx}, ${iAl})">
-                                ${jaFoi ? '<i class="fa-solid fa-check"></i> Em Práticas' : '<i class="fa-solid fa-share"></i>'}
+                                ${jaFoi ? '<i class="fa-solid fa-check"></i> Prática' : '<i class="fa-solid fa-share"></i> Enviar'}
                             </button>
                         </div>
                     `;
@@ -3285,7 +3337,7 @@
                         <div class="painel-encaminhar-rapido" id="painel-encaminhar-${idx}" style="display:none;">
                             <div style="font-size:11px; font-weight:700; color:var(--marrom); text-transform:uppercase;">
                                 <i class="fa-solid fa-share" style="color:var(--laranja);"></i>
-                                Clique na seta ao lado do aluno para encaminhá-lo à aba de Práticas Profissionalizantes:
+                                Selecione os alunos para encaminhar à aba de Práticas Profissionalizantes:
                             </div>
                             <div class="grid-alunos-encaminhar">${listaEncaminharHTML}</div>
                         </div>
@@ -3327,7 +3379,7 @@
                             </div>
                         </div>
 
-                        <!-- PRÉ-VISUALIZAÇÃO DA FICHA (COM SETA DE ENCAMINHAMENTO NA TELA, LIMPA NA IMPRESSÃO) -->
+                        <!-- PRÉ-VISUALIZAÇÃO DA FICHA (COLUNA FIXA DE ENCAMINHAMENTO NA TELA, LIMPA NA IMPRESSÃO) -->
                         <div class="preview-wrapper" id="preview-wrapper-${idx}" style="display:none;">
                             ${construirHTMLFicha(grupo, idx, false)}
                         </div>
@@ -3490,6 +3542,7 @@
                 .ficha-tabela-alunos thead { display: table-header-group; }
                 .ficha-tabela-alunos th { border: 1px solid #000; padding: 2.5px 4px; font-size: 9.2px; font-weight: 700; text-align: center; background: #fff; color: #000; }
                 .ficha-tabela-alunos td { border: 1px solid #000; padding: 1px 5px; height: 14.2px; font-size: 9px; line-height: 1.1; color: #000; }
+                .ficha-folha.ficha-pratica .ficha-tabela-alunos td { height: 22px; font-size: 9.5px; }
                 .ficha-tabela-alunos td.col-ord, .ficha-tabela-alunos td.col-mat { text-align: center; }
                 .ficha-tabela-alunos tr.ficha-faixa-rep td { text-align: center; font-weight: 700; padding: 2px; height: auto; border-top: 1.5px solid #000; border-bottom: 1.5px solid #000; }
                 .ficha-rodape { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 9px; font-size: 9.2px; gap: 14px; }
@@ -3524,7 +3577,7 @@
             }, 450);
         }
 
-    function imprimirFichaUnica(idx) {
+        function imprimirFichaUnica(idx) {
             const grupo = fichasAtuaisCache[idx];
             if (!grupo) return;
             const html = `<div class="ficha-pagina">${construirHTMLFicha(grupo, idx, true)}</div>`;
