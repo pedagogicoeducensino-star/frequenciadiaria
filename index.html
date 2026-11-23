@@ -48,48 +48,94 @@
         }
 
         /* =========================================
-           TELA DE LOGIN
+           TELA DE LOGIN (DUAS CAIXAS LADO A LADO)
            ========================================= */
         #login-screen {
             min-height: 100vh; 
             display: flex; 
             justify-content: center; 
             align-items: center;
-            padding: 20px;
+            padding: 24px;
             background: linear-gradient(135deg, #3E2723, #5D4037);
+        }
+
+        .login-grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: stretch;
+            gap: 26px;
+            max-width: 760px;
+            width: 100%;
         }
 
         .login-box {
             background: var(--branco); 
-            padding: 36px 30px; 
+            padding: 36px 28px; 
             border-radius: 15px;
             box-shadow: 0 15px 35px rgba(0,0,0,0.4); 
-            width: 360px; 
+            width: 340px; 
             max-width: 100%;
             text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .login-box-livre {
+            border-top: 5px solid var(--dourado);
         }
 
         .login-box .icon-wrapper {
-            width: 80px; 
-            height: 80px; 
-            background: rgba(243, 156, 18, 0.1); 
+            width: 76px; 
+            height: 76px; 
+            background: rgba(243, 156, 18, 0.12); 
             border-radius: 50%;
             display: flex; 
             align-items: center; 
             justify-content: center; 
-            margin: 0 auto 20px auto;
+            margin: 0 auto 18px auto;
+        }
+
+        .login-box-livre .icon-wrapper {
+            background: rgba(93, 64, 55, 0.1);
         }
 
         .login-box i.fa-lock { 
-            font-size: 35px; 
+            font-size: 32px; 
             color: var(--laranja); 
+        }
+
+        .login-box-livre i.fa-clipboard-list {
+            font-size: 32px;
+            color: var(--marrom);
         }
 
         .login-box h2 { 
             color: var(--marrom); 
-            margin-bottom: 22px; 
-            font-size: 20px; 
+            margin-bottom: 18px; 
+            font-size: 19px; 
             font-weight: 600; 
+        }
+
+        .login-box-livre .desc-livre {
+            font-size: 12.5px;
+            color: #666;
+            line-height: 1.55;
+            margin-bottom: 22px;
+        }
+
+        .badge-sem-senha {
+            display: inline-block;
+            background: #FEF5E7;
+            color: #B9770E;
+            border: 1px solid #F8C471;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 3px 10px;
+            border-radius: 20px;
+            text-transform: uppercase;
+            margin-bottom: 12px;
         }
         
         .input-senha { 
@@ -120,48 +166,6 @@
             border-color: var(--laranja); 
             background: var(--branco); 
             box-shadow: 0 0 0 3px rgba(243, 156, 18, 0.1); 
-        }
-
-        .divisor-login {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin: 22px 0 16px 0;
-            color: #95A5A6;
-            font-size: 11px;
-            font-weight: 600;
-            text-transform: uppercase;
-        }
-
-        .divisor-login::before,
-        .divisor-login::after {
-            content: "";
-            flex: 1;
-            height: 1px;
-            background: var(--cinza-borda);
-        }
-
-        .btn-acesso-livre {
-            background: #FFFDF5;
-            color: var(--marrom);
-            border: 2px solid var(--dourado);
-            box-shadow: 0 3px 0 #C59B27;
-        }
-
-        .btn-acesso-livre:hover {
-            background: #FEF5E7;
-        }
-
-        .btn-acesso-livre:active {
-            transform: translateY(3px);
-            box-shadow: 0 0 0 #C59B27;
-        }
-
-        .subtexto-livre {
-            font-size: 11px;
-            color: #7F8C8D;
-            margin-top: 8px;
-            line-height: 1.4;
         }
 
         #loading-screen { 
@@ -243,21 +247,63 @@
             box-shadow: 0 0 0 #1E8449;
         }
 
+        .btn-dourado-outline {
+            background: #FFF8E6;
+            color: var(--marrom) !important;
+            border: 2px solid var(--dourado);
+            box-shadow: 0 3px 0 #C59B27;
+        }
+
+        .btn-dourado-outline:hover {
+            background: #FCECC7;
+        }
+
+        .btn-dourado-outline:active {
+            transform: translateY(3px);
+            box-shadow: 0 0 0 #C59B27;
+        }
+
         .btn-sm {
             width: auto;
-            padding: 8px 14px;
+            padding: 7px 13px;
             font-size: 11px;
+        }
+
+        .btn-icon-mini {
+            width: 34px;
+            height: 34px;
+            border: none;
+            border-radius: 6px;
+            background: var(--marrom);
+            color: var(--branco);
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-size: 12px;
+            transition: 0.2s;
+        }
+
+        .btn-icon-mini:hover {
+            background: var(--laranja);
         }
 
         /* =========================================
            TELA PRINCIPAL E CABEÇALHO
            ========================================= */
-        #app-screen,
-        #gerador-screen { 
+        #app-screen { 
             display: none; 
             padding: 25px; 
             max-width: 1400px; 
             margin: auto; 
+        }
+
+        #gerador-screen {
+            display: none;
+            padding: 16px 20px;
+            max-width: 1240px;
+            margin: auto;
         }
         
         .so-impressao { 
@@ -286,10 +332,19 @@
             border-left: 6px solid var(--dourado);
         }
 
+        #gerador-screen header {
+            padding: 12px 18px;
+            margin-bottom: 14px;
+        }
+
         .saudacao { 
             font-size: 20px; 
             color: var(--marrom); 
             font-weight: 500;
+        }
+
+        #gerador-screen .saudacao {
+            font-size: 17px;
         }
 
         .saudacao span { 
@@ -321,6 +376,15 @@
             border-top: 4px solid var(--marrom);
         }
 
+        .bloco-compacto {
+            background: var(--branco);
+            padding: 14px 18px;
+            border-radius: 10px;
+            box-shadow: var(--sombra-box);
+            margin-bottom: 14px;
+            border-top: 3px solid var(--marrom);
+        }
+
         .titulo-sessao { 
             color: var(--marrom); 
             margin-bottom: 20px; 
@@ -344,28 +408,29 @@
             gap: 18px; 
         }
 
-        .grid-4 {
+        .grid-gerador-compacto {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
-            gap: 15px;
+            grid-template-columns: repeat(auto-fit, minmax(165px, 1fr));
+            gap: 10px;
+            align-items: end;
         }
         
         .linha-frequencia { 
             display: flex; 
             align-items: flex-end; 
-            gap: 15px; 
+            gap: 12px; 
             flex-wrap: wrap; 
         }
 
         .linha-frequencia .campo { 
             flex: 1; 
-            min-width: 120px; 
+            min-width: 110px; 
         }
 
         .linha-frequencia button { 
-            flex: 1.5; 
-            min-width: 180px; 
-            height: 38px; 
+            flex: 1.4; 
+            min-width: 170px; 
+            height: 36px; 
             margin-bottom: 0; 
         }
         
@@ -375,31 +440,37 @@
         }
 
         .campo label { 
-            font-size: 11px; 
+            font-size: 10.5px; 
             font-weight: 700; 
             color: var(--marrom-claro); 
-            margin-bottom: 6px; 
+            margin-bottom: 4px; 
             text-transform: uppercase;
         }
 
         .campo input, .campo select, .campo textarea { 
-            padding: 8px 12px; 
-            height: 38px; 
+            padding: 6px 10px; 
+            height: 36px; 
             border: 1px solid var(--cinza-borda); 
             border-radius: 6px; 
-            font-size: 13px; 
+            font-size: 12.5px; 
             outline: none; 
             transition: 0.3s; 
             color: #333; 
             background: #fff;
         }
 
+        #gerador-screen .campo input,
+        #gerador-screen .campo select {
+            height: 34px;
+            font-size: 12px;
+        }
+
         .campo textarea {
             height: auto;
-            min-height: 110px;
+            min-height: 85px;
             resize: vertical;
             font-family: monospace;
-            font-size: 12px;
+            font-size: 11.5px;
         }
 
         .campo input:focus, .campo select:focus, .campo textarea:focus { 
@@ -416,51 +487,98 @@
             box-shadow: var(--sombra-interna); 
         }
 
-        /* =========================================
-           GERADOR DE LISTAS (UPLOAD, ABAS E CARDS)
-           ========================================= */
-        .upload-zone {
-            border: 2px dashed var(--laranja);
-            background: #FFFDF5;
-            border-radius: 12px;
-            padding: 28px 20px;
-            text-align: center;
-            cursor: pointer;
-            transition: 0.25s;
+        .select-com-btn {
+            display: flex;
+            gap: 5px;
+            align-items: center;
         }
 
-        .upload-zone:hover,
-        .upload-zone.dragover {
+        .select-com-btn select {
+            flex: 1;
+            min-width: 0;
+        }
+
+        /* =========================================
+           GERADOR DE LISTAS (UPLOAD COMPACTO, ABAS E CARDS)
+           ========================================= */
+        .upload-barra-compacta {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+            border: 2px dashed var(--laranja);
+            background: #FFFDF5;
+            border-radius: 9px;
+            padding: 10px 14px;
+            cursor: pointer;
+            transition: 0.2s;
+            margin-bottom: 12px;
+        }
+
+        .upload-barra-compacta:hover,
+        .upload-barra-compacta.dragover {
             background: #FEF5E7;
             border-color: var(--marrom);
         }
 
-        .upload-zone i {
-            font-size: 38px;
+        .upload-barra-esq {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .upload-barra-esq i {
+            font-size: 24px;
             color: var(--laranja);
-            margin-bottom: 10px;
         }
 
-        .upload-zone h3 {
+        .upload-barra-esq h3 {
+            font-size: 13px;
             color: var(--marrom);
-            font-size: 16px;
-            margin-bottom: 6px;
+            margin-bottom: 1px;
         }
 
-        .upload-zone p {
+        .upload-barra-esq p {
+            font-size: 11px;
             color: #666;
-            font-size: 12px;
+        }
+
+        .upload-barra-acoes {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .opcoes-linha-extra {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+            padding-top: 8px;
+            border-top: 1px solid #EEF0F2;
+            font-size: 11.5px;
+            color: var(--marrom);
+        }
+
+        .opcoes-linha-extra label {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            font-weight: 500;
         }
 
         .status-varredura {
             display: none;
-            margin-top: 15px;
-            padding: 12px 16px;
-            border-radius: 8px;
+            margin-top: 10px;
+            padding: 8px 12px;
+            border-radius: 7px;
             background: #EAFAF1;
             border: 1px solid #A9DFBF;
             color: #1E8449;
-            font-size: 12px;
+            font-size: 11.5px;
             font-weight: 600;
         }
 
@@ -474,19 +592,19 @@
             display: flex;
             gap: 10px;
             flex-wrap: wrap;
-            margin-bottom: 20px;
+            margin-bottom: 12px;
         }
 
         .aba-modelo-btn {
             flex: 1;
-            min-width: 260px;
-            padding: 14px 18px;
-            border-radius: 10px;
+            min-width: 250px;
+            padding: 10px 14px;
+            border-radius: 9px;
             border: 2px solid var(--cinza-borda);
             background: var(--branco);
             color: var(--marrom);
             font-weight: 700;
-            font-size: 13px;
+            font-size: 12.5px;
             cursor: pointer;
             display: flex;
             align-items: center;
@@ -497,15 +615,15 @@
         .aba-modelo-btn.ativa {
             border-color: var(--laranja);
             background: #FFF9EB;
-            box-shadow: 0 4px 12px rgba(243, 156, 18, 0.15);
+            box-shadow: 0 3px 10px rgba(243, 156, 18, 0.14);
         }
 
         .badge-contagem {
             background: var(--marrom);
             color: var(--branco);
-            padding: 3px 10px;
+            padding: 2px 9px;
             border-radius: 20px;
-            font-size: 11px;
+            font-size: 10.5px;
         }
 
         .aba-modelo-btn.ativa .badge-contagem {
@@ -517,10 +635,10 @@
             justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
-            gap: 12px;
-            margin-bottom: 20px;
-            padding: 12px 16px;
-            background: var(--cinza-fundo);
+            gap: 10px;
+            margin-bottom: 12px;
+            padding: 9px 14px;
+            background: var(--branco);
             border-radius: 8px;
             border: 1px solid var(--cinza-borda);
         }
@@ -530,7 +648,7 @@
             border: 1px solid var(--cinza-borda);
             border-left: 5px solid var(--laranja);
             border-radius: 10px;
-            margin-bottom: 24px;
+            margin-bottom: 14px;
             overflow: hidden;
             box-shadow: var(--sombra-box);
         }
@@ -540,33 +658,33 @@
         }
 
         .card-turma-topo {
-            padding: 15px 20px;
+            padding: 10px 15px;
             background: #FAFAFA;
             border-bottom: 1px solid var(--cinza-borda);
             display: flex;
             justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
-            gap: 12px;
+            gap: 10px;
         }
 
         .card-turma-info h3 {
             color: var(--marrom);
-            font-size: 15px;
-            margin-bottom: 4px;
+            font-size: 14px;
+            margin-bottom: 3px;
         }
 
         .tags-salas {
             display: flex;
             flex-wrap: wrap;
-            gap: 6px;
+            gap: 5px;
             align-items: center;
         }
 
         .tag-sala {
-            font-size: 10px;
+            font-size: 9.5px;
             font-weight: 700;
-            padding: 3px 8px;
+            padding: 2px 7px;
             border-radius: 4px;
             text-transform: uppercase;
         }
@@ -578,44 +696,44 @@
 
         .card-turma-botoes {
             display: flex;
-            gap: 8px;
+            gap: 6px;
             flex-wrap: wrap;
         }
 
         .painel-vinculo-presenca {
-            padding: 14px 20px;
+            padding: 10px 15px;
             background: #FFFDF7;
             border-bottom: 1px solid #F0E6CC;
         }
 
         .painel-vinculo-titulo {
-            font-size: 11px;
+            font-size: 10.5px;
             font-weight: 700;
             color: var(--marrom);
             text-transform: uppercase;
-            margin-bottom: 10px;
+            margin-bottom: 7px;
             display: flex;
             align-items: center;
             gap: 6px;
         }
 
         .preview-wrapper {
-            padding: 18px;
+            padding: 14px;
             background: #EBEDEF;
             overflow-x: auto;
         }
 
         /* =========================================
-           MODELO VISUAL DA FICHA DE PRESENÇA (ESCOLA)
+           MODELO VISUAL DA FICHA DE PRESENÇA (PAISAGEM)
            ========================================= */
         .ficha-folha {
             background: #FFFFFF;
-            width: 196mm;
+            width: 280mm;
             margin: 0 auto;
-            padding: 6mm;
+            padding: 5mm 6mm;
             color: #000000;
             font-family: 'Calibri', 'Arial', sans-serif;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.12);
+            box-shadow: 0 4px 14px rgba(0,0,0,0.12);
         }
 
         .ficha-folha * {
@@ -626,38 +744,47 @@
             width: 100%;
             border-collapse: collapse;
             border: 1.5px solid #000;
-            margin-bottom: 4px;
+            margin-bottom: 3px;
         }
 
         .ficha-cabecalho-box td {
             border: 1px solid #000;
-            padding: 4px 8px;
+            padding: 3px 8px;
             vertical-align: middle;
         }
 
         .ficha-logo-cell {
-            width: 125px;
+            width: 155px;
             text-align: center;
+        }
+
+        .ficha-logo-img {
+            max-height: 40px;
+            max-width: 140px;
+            width: auto;
+            object-fit: contain;
+            display: block;
+            margin: 0 auto;
         }
 
         .ficha-escola-info {
             text-align: center;
-            font-size: 10px;
-            line-height: 1.3;
+            font-size: 9.5px;
+            line-height: 1.25;
             color: #000;
         }
 
         .ficha-escola-info strong {
-            font-size: 11.5px;
+            font-size: 11px;
             display: block;
         }
 
         .ficha-titulo-principal {
             text-align: center;
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 700;
-            letter-spacing: 0.5px;
-            padding: 5px 0 4px 0;
+            letter-spacing: 0.4px;
+            padding: 3px 0 2px 0;
             text-transform: uppercase;
             color: #000;
         }
@@ -665,13 +792,13 @@
         .ficha-meta-table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 5px;
-            font-size: 10.5px;
+            margin-bottom: 4px;
+            font-size: 9.5px;
         }
 
         .ficha-meta-table td {
             border: none;
-            padding: 2px 4px;
+            padding: 1.5px 4px;
             text-align: left;
             color: #000;
             white-space: nowrap;
@@ -691,8 +818,8 @@
             background: #FFFFFF !important;
             color: #000000 !important;
             border: 1px solid #000 !important;
-            padding: 4px 4px !important;
-            font-size: 10.5px !important;
+            padding: 3px 4px !important;
+            font-size: 9.5px !important;
             font-weight: 700 !important;
             text-align: center !important;
             position: static !important;
@@ -700,9 +827,10 @@
 
         .ficha-tabela-alunos td {
             border: 1px solid #000 !important;
-            padding: 2px 5px !important;
-            height: 20px;
-            font-size: 10.5px !important;
+            padding: 1px 5px !important;
+            height: 15px;
+            font-size: 9.5px !important;
+            line-height: 1.15;
             color: #000 !important;
             background: #FFFFFF !important;
             text-align: left;
@@ -716,9 +844,9 @@
         .ficha-tabela-alunos tr.ficha-faixa-rep td {
             text-align: center !important;
             font-weight: 700 !important;
-            font-size: 10.5px !important;
+            font-size: 9.5px !important;
             letter-spacing: 0.4px;
-            padding: 4px !important;
+            padding: 2.5px !important;
             height: auto;
             border-top: 1.5px solid #000 !important;
             border-bottom: 1.5px solid #000 !important;
@@ -728,10 +856,10 @@
             display: flex;
             justify-content: space-between;
             align-items: flex-end;
-            margin-top: 16px;
-            font-size: 10.5px;
+            margin-top: 10px;
+            font-size: 9.5px;
             color: #000;
-            gap: 15px;
+            gap: 16px;
         }
 
         .ficha-rodape-emitido {
@@ -743,30 +871,83 @@
         .ficha-linha-assinatura {
             display: inline-block;
             border-bottom: 1px solid #000;
-            min-width: 150px;
+            min-width: 190px;
             padding: 0 6px;
             text-align: left;
         }
 
         .ficha-linha-assinatura-centro {
             flex: 1;
-            max-width: 240px;
+            max-width: 340px;
             border-bottom: 1px solid #000;
-            height: 14px;
+            height: 13px;
         }
 
         .ficha-rodape-datahora {
-            font-size: 10.5px;
+            font-size: 9.5px;
             white-space: nowrap;
         }
 
         .aviso-vazio-gerador {
             text-align: center;
-            padding: 40px 20px;
+            padding: 28px 16px;
             color: #7F8C8D;
             background: var(--branco);
             border-radius: 10px;
             border: 1px dashed var(--cinza-borda);
+        }
+
+        /* =========================================
+           MODAL DE CADASTRO DE NOMES (INSTRUTOR / EMISSOR)
+           ========================================= */
+        .modal-nomes-box {
+            background: var(--branco);
+            width: 440px;
+            max-width: 94%;
+            padding: 22px;
+            border-radius: 12px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+            animation: slideIn 0.25s ease-out;
+        }
+
+        .modal-nomes-box h3 {
+            color: var(--marrom);
+            font-size: 16px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .lista-nomes-cadastrados {
+            max-height: 220px;
+            overflow-y: auto;
+            border: 1px solid var(--cinza-borda);
+            border-radius: 8px;
+            margin-top: 12px;
+            margin-bottom: 14px;
+        }
+
+        .item-nome-cadastrado {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 7px 12px;
+            border-bottom: 1px solid #EEF0F2;
+            font-size: 12.5px;
+        }
+
+        .item-nome-cadastrado:last-child {
+            border-bottom: none;
+        }
+
+        .btn-del-nome {
+            background: none;
+            border: none;
+            color: var(--vermelho);
+            cursor: pointer;
+            font-size: 13px;
+            padding: 2px 6px;
         }
 
         /* =========================================
@@ -1179,39 +1360,76 @@
         </div>
     </div>
 
-    <!-- =========================================
-         TELA DE LOGIN + ACESSO LIVRE AO GERADOR
-         ========================================= -->
-    <div id="login-screen">
-        <div class="login-box">
-            <div class="icon-wrapper">
-                <i class="fa-solid fa-lock"></i>
+    <!-- MODAL DE CADASTRO DE NOMES (INSTRUTORES / EMISSORES) -->
+    <div id="modal-nomes" class="modal-overlay">
+        <div class="modal-nomes-box">
+            <h3>
+                <span id="modal-nomes-titulo"><i class="fa-solid fa-user-plus" style="color:var(--laranja);"></i> Cadastrar Nomes</span>
+                <button type="button" onclick="fecharModalNomes()" style="background:none; border:none; font-size:18px; color:#888; cursor:pointer;">&times;</button>
+            </h3>
+            <div style="display:flex; gap:8px;">
+                <input type="text" id="input-novo-nome" placeholder="Digite o nome completo..." style="flex:1; padding:8px 10px; border:1px solid var(--cinza-borda); border-radius:6px; outline:none; font-size:12.5px;" onkeypress="if(event.key==='Enter') adicionarNomeCadastrado()">
+                <button type="button" class="btn-acao btn-laranja btn-sm" onclick="adicionarNomeCadastrado()">
+                    <i class="fa-solid fa-plus"></i> Adicionar
+                </button>
             </div>
-            <h2>Controle de Presenças</h2>
-            <div class="input-senha">
-                <i class="fa-solid fa-key"></i>
-                <input type="password" id="senha" placeholder="Digite sua senha" onkeypress="verificarEnter(event)">
+            <div class="lista-nomes-cadastrados" id="lista-nomes-cadastrados"></div>
+            <div style="text-align:right;">
+                <button type="button" class="btn-acao btn-marrom btn-sm" onclick="fecharModalNomes()">Concluir</button>
             </div>
-            <button class="btn-acao btn-laranja" id="btn-entrar" onclick="entrar()">
-                <i class="fa-solid fa-arrow-right-to-bracket"></i> Entrar no Painel
-            </button>
-            <div id="loading-screen">
-                <i class="fa-solid fa-circle-notch fa-spin"></i> Conectando à nuvem...
-            </div>
-
-            <div class="divisor-login">ou acesso livre</div>
-
-            <button class="btn-acao btn-acesso-livre" onclick="abrirGeradorListas()">
-                <i class="fa-solid fa-file-pdf"></i> Gerar Lista de Presença
-            </button>
-            <p class="subtexto-livre">
-                Suba o PDF do CGD sem senha para montar e imprimir as fichas do dia (Éter/Elos e Práticas).
-            </p>
         </div>
     </div>
 
     <!-- =========================================
-         TELA DO GERADOR DE LISTAS DE PRESENÇA (ACESSO LIVRE)
+         TELA DE LOGIN: DUAS CAIXAS LADO A LADO
+         ========================================= -->
+    <div id="login-screen">
+        <div class="login-grid">
+            <!-- CAIXA 1: PAINEL COM SENHA -->
+            <div class="login-box">
+                <div>
+                    <div class="icon-wrapper">
+                        <i class="fa-solid fa-lock"></i>
+                    </div>
+                    <h2>Controle de Presenças</h2>
+                    <div class="input-senha">
+                        <i class="fa-solid fa-key"></i>
+                        <input type="password" id="senha" placeholder="Digite sua senha" onkeypress="verificarEnter(event)">
+                    </div>
+                </div>
+                <div>
+                    <button class="btn-acao btn-laranja" id="btn-entrar" onclick="entrar()">
+                        <i class="fa-solid fa-arrow-right-to-bracket"></i> Entrar no Painel
+                    </button>
+                    <div id="loading-screen">
+                        <i class="fa-solid fa-circle-notch fa-spin"></i> Conectando à nuvem...
+                    </div>
+                </div>
+            </div>
+
+            <!-- CAIXA 2: GERADOR DE LISTAS (ACESSO LIVRE) -->
+            <div class="login-box login-box-livre">
+                <div>
+                    <div class="icon-wrapper">
+                        <i class="fa-solid fa-clipboard-list"></i>
+                    </div>
+                    <span class="badge-sem-senha"><i class="fa-solid fa-unlock"></i> Acesso Livre</span>
+                    <h2>Listas de Presença</h2>
+                    <p class="desc-livre">
+                        Envie o PDF de alunos do CGD para montar e imprimir automaticamente as fichas em paisagem (Éter/Elos e Práticas).
+                    </p>
+                </div>
+                <div>
+                    <button class="btn-acao btn-marrom" onclick="abrirGeradorListas()">
+                        <i class="fa-solid fa-file-pdf"></i> Gerar Lista de Presença
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- =========================================
+         TELA DO GERADOR DE LISTAS (COMPACTA E FUNCIONAL)
          ========================================= -->
     <div id="gerador-screen">
         <header>
@@ -1219,58 +1437,51 @@
                 <i class="fa-solid fa-clipboard-list" style="color: var(--laranja);"></i>
                 Gerador de <span>Listas de Presença</span>
             </div>
-            <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+            <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
                 <button class="btn-acao btn-marrom btn-sm" id="btn-voltar-gerador" onclick="voltarDoGerador()">
-                    <i class="fa-solid fa-arrow-left"></i> Voltar ao Login / Painel
+                    <i class="fa-solid fa-arrow-left"></i> Voltar ao Login
                 </button>
             </div>
         </header>
 
-        <!-- BLOCO 1: UPLOAD DO PDF -->
-        <div class="bloco">
-            <h2 class="titulo-sessao">
-                <i class="fa-solid fa-cloud-arrow-up"></i> 1. Importar Relatório de Alunos (PDF do CGD)
-            </h2>
-
-            <div class="upload-zone" id="drop-zone-pdf" onclick="document.getElementById('input-pdf-alunos').click()">
-                <i class="fa-solid fa-file-pdf"></i>
-                <h3>Clique para selecionar ou arraste o PDF de alunos aqui</h3>
-                <p>Compatível com o relatório do CGD (colunas: Dia, Horário, Sala, Aluno e Contrato). Nenhuma presença atual é alterada.</p>
+        <!-- PAINEL UNIFICADO E COMPACTO: UPLOAD + CONFIGURAÇÕES -->
+        <div class="bloco-compacto">
+            <!-- Faixa enxuta de Upload -->
+            <div class="upload-barra-compacta" id="drop-zone-pdf" onclick="document.getElementById('input-pdf-alunos').click()">
+                <div class="upload-barra-esq">
+                    <i class="fa-solid fa-file-pdf"></i>
+                    <div>
+                        <h3>Importar PDF de Alunos do CGD</h3>
+                        <p>Clique ou arraste o arquivo aqui (Éter + Estação Elos no mesmo horário são unidos automaticamente)</p>
+                    </div>
+                </div>
+                <div class="upload-barra-acoes" onclick="event.stopPropagation()">
+                    <button type="button" class="btn-acao btn-laranja btn-sm" onclick="document.getElementById('input-pdf-alunos').click()">
+                        <i class="fa-solid fa-upload"></i> Selecionar PDF
+                    </button>
+                    <button type="button" class="btn-acao btn-marrom btn-sm" onclick="alternarCaixaColar()">
+                        <i class="fa-solid fa-paste"></i> Colar Tabela
+                    </button>
+                </div>
                 <input type="file" id="input-pdf-alunos" accept="application/pdf" style="display:none;" onchange="processarUploadPDF(event)">
             </div>
 
-            <div style="margin-top: 12px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
-                <button type="button" class="btn-acao btn-marrom btn-sm" onclick="alternarCaixaColar()">
-                    <i class="fa-solid fa-paste"></i> Alternativa: Colar tabela copiada do CGD
-                </button>
-                <span style="font-size:11px; color:#7F8C8D;">
-                    Dica: Laboratório Éter e Estação Elos no mesmo dia/horário são unidos automaticamente.
-                </span>
-            </div>
-
-            <div id="box-colar-cgd" style="display:none; margin-top: 14px; padding: 14px; background: var(--cinza-fundo); border-radius: 8px; border: 1px solid var(--cinza-borda);">
+            <div id="box-colar-cgd" style="display:none; margin-bottom: 12px; padding: 10px; background: var(--cinza-fundo); border-radius: 8px; border: 1px solid var(--cinza-borda);">
                 <div class="campo">
-                    <label>Cole abaixo o conteúdo copiado da tela do CGD (Ctrl+C na tabela e Ctrl+V aqui)</label>
-                    <textarea id="texto-colado-cgd" placeholder="Exemplo:&#10;Segunda-feira	07:00 às 09:00	Laboratório de Ensino Continuado Éter	Adalberto Neto Xavier Menezes	2593"></textarea>
+                    <label>Cole abaixo o conteúdo copiado da tela do CGD</label>
+                    <textarea id="texto-colado-cgd" placeholder="Segunda-feira	07:00 às 09:00	Laboratório de Ensino Continuado Éter	Adalberto Neto Xavier Menezes	2593"></textarea>
                 </div>
-                <div style="margin-top: 10px; text-align: right;">
+                <div style="margin-top: 8px; text-align: right;">
                     <button type="button" class="btn-acao btn-laranja btn-sm" onclick="processarTextoColadoCGD()">
-                        <i class="fa-solid fa-wand-magic-sparkles"></i> Processar Texto Colado
+                        <i class="fa-solid fa-wand-magic-sparkles"></i> Processar Texto
                     </button>
                 </div>
             </div>
 
-            <div id="status-varredura" class="status-varredura"></div>
-        </div>
-
-        <!-- BLOCO 2: CONFIGURAÇÕES DA DATA E CABEÇALHO -->
-        <div class="bloco">
-            <h2 class="titulo-sessao">
-                <i class="fa-solid fa-calendar-check"></i> 2. Data, Mês e Dados da Ficha
-            </h2>
-            <div class="grid-4">
+            <!-- Filtros e Cadastro em linha compacta -->
+            <div class="grid-gerador-compacto">
                 <div class="campo">
-                    <label>DATA DA AULA (DETECTA O DIA DA SEMANA)</label>
+                    <label>DATA DA AULA</label>
                     <input type="date" id="ger-data" onchange="aoMudarDataGerador()">
                 </div>
                 <div class="campo">
@@ -1278,7 +1489,7 @@
                     <input type="text" id="ger-dia-semana" readonly>
                 </div>
                 <div class="campo">
-                    <label>MÊS REFERÊNCIA (EDITÁVEL)</label>
+                    <label>MÊS REFERÊNCIA</label>
                     <select id="ger-mes-ref" onchange="renderizarFichasGeradas()">
                         <option value="JANEIRO">JANEIRO</option>
                         <option value="FEVEREIRO">FEVEREIRO</option>
@@ -1296,39 +1507,50 @@
                 </div>
                 <div class="campo">
                     <label>INSTRUTOR(A)</label>
-                    <input type="text" id="ger-instrutor" placeholder="Ex.: DAVI FELÍCIO" oninput="renderizarFichasGeradas()">
+                    <div class="select-com-btn">
+                        <select id="ger-instrutor" onchange="salvarSelecaoAtualNomes(); renderizarFichasGeradas();"></select>
+                        <button type="button" class="btn-icon-mini" title="Cadastrar / Gerenciar Instrutores" onclick="abrirModalNomes('instrutores')">
+                            <i class="fa-solid fa-user-plus"></i>
+                        </button>
+                    </div>
                 </div>
                 <div class="campo">
                     <label>EMITIDO POR</label>
-                    <input type="text" id="ger-emitido-por" placeholder="Ex.: DAVI FELÍCIO" oninput="renderizarFichasGeradas()">
+                    <div class="select-com-btn">
+                        <select id="ger-emitido-por" onchange="salvarSelecaoAtualNomes(); renderizarFichasGeradas();"></select>
+                        <button type="button" class="btn-icon-mini" title="Cadastrar / Gerenciar Emissores" onclick="abrirModalNomes('emissores')">
+                            <i class="fa-solid fa-user-plus"></i>
+                        </button>
+                    </div>
                 </div>
-                <div class="campo">
-                    <label>MÍNIMO DE LINHAS REGULARES</label>
+                <div class="campo" style="max-width: 120px;">
+                    <label>LINHAS MÍN.</label>
                     <input type="number" id="ger-min-linhas" value="35" min="10" max="80" oninput="renderizarFichasGeradas()">
                 </div>
-                <div class="campo" style="justify-content: flex-end;">
-                    <label style="display:flex; align-items:center; gap:8px; cursor:pointer; margin-top: 18px; text-transform:none; font-size:12px; color:var(--marrom);">
-                        <input type="checkbox" id="ger-marcar-elos" style="width:16px; height:16px; height:auto;" onchange="renderizarFichasGeradas()">
-                        Sinalizar "Estação Elos" em Observações
-                    </label>
-                </div>
-                <div class="campo" style="justify-content: flex-end;">
-                    <label style="display:flex; align-items:center; gap:8px; cursor:pointer; margin-top: 18px; text-transform:none; font-size:12px; color:var(--marrom);">
-                        <input type="checkbox" id="ger-unir-praticas" style="width:16px; height:16px; height:auto;" onchange="renderizarFichasGeradas()">
-                        Unir Boreal + Práticas no mesmo horário
-                    </label>
-                </div>
             </div>
+
+            <div class="opcoes-linha-extra">
+                <label>
+                    <input type="checkbox" id="ger-marcar-elos" onchange="renderizarFichasGeradas()">
+                    Sinalizar "Estação Elos" em Observações
+                </label>
+                <label>
+                    <input type="checkbox" id="ger-unir-praticas" onchange="renderizarFichasGeradas()">
+                    Unir Boreal + Práticas no mesmo horário
+                </label>
+            </div>
+
+            <div id="status-varredura" class="status-varredura"></div>
         </div>
 
         <!-- ABAS DOS DOIS MODELOS -->
         <div class="abas-modelos">
             <button type="button" class="aba-modelo-btn ativa" id="aba-btn-regulares" onclick="selecionarModeloFicha('regulares')">
-                <span><i class="fa-solid fa-desktop" style="color:var(--laranja); margin-right:6px;"></i> Modelo 1: Aulas Regulares (Éter + Estação Elos)</span>
+                <span><i class="fa-solid fa-desktop" style="color:var(--laranja); margin-right:6px;"></i> Aulas Regulares (Éter + Estação Elos)</span>
                 <span class="badge-contagem" id="badge-regulares">0 turmas</span>
             </button>
             <button type="button" class="aba-modelo-btn" id="aba-btn-praticas" onclick="selecionarModeloFicha('praticas')">
-                <span><i class="fa-solid fa-flask" style="color:var(--marrom); margin-right:6px;"></i> Modelo 2: Práticas Profissionalizantes (Boreal / Práticas)</span>
+                <span><i class="fa-solid fa-flask" style="color:var(--marrom); margin-right:6px;"></i> Práticas Profissionalizantes (Boreal / Práticas)</span>
                 <span class="badge-contagem" id="badge-praticas">0 turmas</span>
             </button>
         </div>
@@ -1336,9 +1558,9 @@
         <!-- BARRA DE AÇÕES EM LOTE -->
         <div class="barra-acoes-lote" id="barra-acoes-lote" style="display:none;">
             <div style="font-size: 12px; color: var(--marrom); font-weight: 600;" id="resumo-dia-lote"></div>
-            <div style="display:flex; gap:10px; flex-wrap:wrap;">
+            <div style="display:flex; gap:8px; flex-wrap:wrap;">
                 <button type="button" class="btn-acao btn-marrom btn-sm" onclick="imprimirTodasFichasAba()">
-                    <i class="fa-solid fa-print"></i> Imprimir Todas desta Aba
+                    <i class="fa-solid fa-print"></i> Imprimir Todas (Paisagem)
                 </button>
                 <button type="button" class="btn-acao btn-azul btn-sm" onclick="baixarPDFTodasFichasAba()">
                     <i class="fa-solid fa-file-pdf"></i> Baixar PDF de Todas
@@ -1349,9 +1571,9 @@
         <!-- CONTAINER DAS FICHAS GERADAS -->
         <div id="container-fichas-geradas">
             <div class="aviso-vazio-gerador">
-                <i class="fa-solid fa-file-arrow-up" style="font-size: 36px; color: var(--laranja); margin-bottom: 10px;"></i>
-                <h3 style="color: var(--marrom); margin-bottom: 6px;">Nenhuma lista carregada ainda</h3>
-                <p style="font-size: 12px;">Faça o upload do PDF de alunos do CGD acima para montar automaticamente as fichas do dia selecionado.</p>
+                <i class="fa-solid fa-file-arrow-up" style="font-size: 30px; color: var(--laranja); margin-bottom: 8px;"></i>
+                <h3 style="color: var(--marrom); font-size: 14px; margin-bottom: 4px;">Nenhuma lista carregada ainda</h3>
+                <p style="font-size: 11.5px;">Envie o PDF do CGD na barra acima para gerar automaticamente as fichas do dia em formato paisagem.</p>
             </div>
         </div>
     </div>
@@ -1361,23 +1583,19 @@
          ========================================= -->
     <div id="app-screen">
         
-        <!-- CABEÇALHO PARA IMPRESSÃO/PDF (INVISÍVEL NA TELA NORMAL) -->
         <div id="assinatura-impressao" class="so-impressao"></div>
 
         <header>
             <div class="saudacao" id="texto-saudacao">Bom dia, <span>Nome</span>!</div>
             
-            <!-- Atalho Gerador, Filtro de Mês de Referência e Botão Sair -->
             <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
-                <button class="btn-acao btn-acesso-livre btn-sm" onclick="abrirGeradorListas()">
+                <button class="btn-acao btn-dourado-outline btn-sm" onclick="abrirGeradorListas()">
                     <i class="fa-solid fa-file-pdf"></i> Listas do Dia (PDF)
                 </button>
 
                 <div style="display: flex; align-items: center; gap: 8px; background: var(--cinza-fundo); padding: 5px 12px; border-radius: 8px; border: 1px solid var(--cinza-borda);">
                     <label style="font-size: 11px; font-weight: 700; color: var(--marrom); margin: 0;">MÊS REFERÊNCIA (HISTÓRICO):</label>
-                    <select id="filtro-mes" onchange="mudouMesFiltro()" style="border: none; background: transparent; outline: none; font-family: 'Poppins'; font-size: 13px; color: var(--laranja-escuro); font-weight: 700; cursor: pointer;">
-                        <!-- Os meses serão gerados aqui automaticamente em português -->
-                    </select>
+                    <select id="filtro-mes" onchange="mudouMesFiltro()" style="border: none; background: transparent; outline: none; font-family: 'Poppins'; font-size: 13px; color: var(--laranja-escuro); font-weight: 700; cursor: pointer;"></select>
                 </div>
                 
                 <button class="btn-sair" onclick="sair()">
@@ -1465,7 +1683,6 @@
             </div>
         </div>
 
-        <!-- Este ID de Relatório ajudará a forçar quebra de página se necessário -->
         <div class="bloco" id="bloco-relatorio">
             <h2 class="titulo-sessao"><i class="fa-solid fa-chart-pie"></i> Controle Geral do Mês</h2>
             
@@ -1546,6 +1763,8 @@
             pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
         }
 
+        const URL_LOGO_EDUC = "https://i.postimg.cc/65SQc2MX/Logo-Educ-Completa.png";
+
         const credenciais = { 
             "031792": "Wesley Luiz",
             "1312892099": "Davi Felício", 
@@ -1567,22 +1786,159 @@
 
         // Estado do Gerador de Listas (independente da planilha)
         let alunosImportados = [];
-        let modeloFichaAtivo = 'regulares'; // 'regulares' | 'praticas'
+        let modeloFichaAtivo = 'regulares';
         let fichasAtuaisCache = [];
-        let turmasLancadasSessao = {}; // chave: "DATA|TURMA" -> colaborador
+        let turmasLancadasSessao = {};
+        let tipoCadastroNomesAtivo = 'instrutores';
 
-        // --- MANTER LOGADO (Evita deslogar no F5) ---
+        // Listas cadastráveis (Instrutores e Emissores)
+        const NOMES_PADRAO_INICIAIS = [
+            "DAVI FELÍCIO",
+            "WESLEY LUIZ",
+            "LORENA",
+            "DANIEL GUILHERME",
+            "MARIA CLARA",
+            "TYSSON"
+        ];
+
+        // --- INICIALIZAÇÃO ---
         window.onload = function() {
-            const usuarioSalvo = localStorage.getItem('usuarioAtivoEduc');
             configurarDragAndDropPDF();
+            inicializarNomesCadastrados();
             inicializarCamposGerador();
+            const usuarioSalvo = localStorage.getItem('usuarioAtivoEduc');
             if (usuarioSalvo) {
                 usuarioAtivo = usuarioSalvo;
                 entrarDiretoNoSistema();
             }
         };
 
-        // --- FUNÇÃO SEPARADA PARA ENTRAR NO SISTEMA E DEPOIS PUXAR OS DADOS ---
+        // =========================================================================
+        // CADASTRO DE NOMES (INSTRUTOR(A) E EMITIDO POR) COM LISTA SUSPENSA
+        // =========================================================================
+        function getListaNomesStorage(tipo) {
+            const chave = tipo === 'instrutores' ? 'educ_lista_instrutores' : 'educ_lista_emissores';
+            const salvo = localStorage.getItem(chave);
+            if (!salvo) {
+                localStorage.setItem(chave, JSON.stringify(NOMES_PADRAO_INICIAIS));
+                return [...NOMES_PADRAO_INICIAIS];
+            }
+            try {
+                const parsed = JSON.parse(salvo);
+                return Array.isArray(parsed) ? parsed : [...NOMES_PADRAO_INICIAIS];
+            } catch {
+                return [...NOMES_PADRAO_INICIAIS];
+            }
+        }
+
+        function salvarListaNomesStorage(tipo, lista) {
+            const chave = tipo === 'instrutores' ? 'educ_lista_instrutores' : 'educ_lista_emissores';
+            localStorage.setItem(chave, JSON.stringify(lista));
+        }
+
+        function inicializarNomesCadastrados() {
+            popularSelectNomes('instrutores');
+            popularSelectNomes('emissores');
+
+            const instSalvo = localStorage.getItem('educ_ult_instrutor');
+            const emiSalvo = localStorage.getItem('educ_ult_emissor');
+            if (instSalvo) document.getElementById('ger-instrutor').value = instSalvo;
+            if (emiSalvo) document.getElementById('ger-emitido-por').value = emiSalvo;
+        }
+
+        function popularSelectNomes(tipo) {
+            const selectId = tipo === 'instrutores' ? 'ger-instrutor' : 'ger-emitido-por';
+            const select = document.getElementById(selectId);
+            if (!select) return;
+
+            const valorAnterior = select.value;
+            const nomes = getListaNomesStorage(tipo);
+
+            select.innerHTML = `<option value="">-- Selecione --</option>`;
+            nomes.forEach(nome => {
+                const opt = document.createElement('option');
+                opt.value = nome;
+                opt.textContent = nome;
+                select.appendChild(opt);
+            });
+
+            if (valorAnterior && nomes.includes(valorAnterior)) {
+                select.value = valorAnterior;
+            }
+        }
+
+        function salvarSelecaoAtualNomes() {
+            localStorage.setItem('educ_ult_instrutor', document.getElementById('ger-instrutor').value || '');
+            localStorage.setItem('educ_ult_emissor', document.getElementById('ger-emitido-por').value || '');
+        }
+
+        function abrirModalNomes(tipo) {
+            tipoCadastroNomesAtivo = tipo;
+            const titulo = tipo === 'instrutores'
+                ? '<i class="fa-solid fa-chalkboard-user" style="color:var(--laranja);"></i> Cadastrar Instrutores'
+                : '<i class="fa-solid fa-user-pen" style="color:var(--laranja);"></i> Cadastrar Emissores (Emitido por)';
+            document.getElementById('modal-nomes-titulo').innerHTML = titulo;
+            document.getElementById('input-novo-nome').value = '';
+            renderizarListaModalNomes();
+            document.getElementById('modal-nomes').style.display = 'flex';
+            setTimeout(() => document.getElementById('input-novo-nome').focus(), 100);
+        }
+
+        function fecharModalNomes() {
+            document.getElementById('modal-nomes').style.display = 'none';
+            popularSelectNomes('instrutores');
+            popularSelectNomes('emissores');
+            renderizarFichasGeradas();
+        }
+
+        function renderizarListaModalNomes() {
+            const container = document.getElementById('lista-nomes-cadastrados');
+            const lista = getListaNomesStorage(tipoCadastroNomesAtivo);
+            if (lista.length === 0) {
+                container.innerHTML = '<div style="padding:16px; text-align:center; color:#999; font-size:12px;">Nenhum nome cadastrado.</div>';
+                return;
+            }
+            container.innerHTML = lista.map((nome, i) => `
+                <div class="item-nome-cadastrado">
+                    <span>${escaparHTML(nome)}</span>
+                    <button type="button" class="btn-del-nome" title="Remover" onclick="removerNomeCadastrado(${i})">
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function adicionarNomeCadastrado() {
+            const input = document.getElementById('input-novo-nome');
+            const novoNome = (input.value || '').trim().toUpperCase();
+            if (!novoNome) return;
+
+            const lista = getListaNomesStorage(tipoCadastroNomesAtivo);
+            if (!lista.includes(novoNome)) {
+                lista.push(novoNome);
+                lista.sort((a, b) => a.localeCompare(b, 'pt-BR'));
+                salvarListaNomesStorage(tipoCadastroNomesAtivo, lista);
+            }
+
+            popularSelectNomes(tipoCadastroNomesAtivo);
+            const selectId = tipoCadastroNomesAtivo === 'instrutores' ? 'ger-instrutor' : 'ger-emitido-por';
+            document.getElementById(selectId).value = novoNome;
+            salvarSelecaoAtualNomes();
+
+            input.value = '';
+            input.focus();
+            renderizarListaModalNomes();
+        }
+
+        function removerNomeCadastrado(index) {
+            const lista = getListaNomesStorage(tipoCadastroNomesAtivo);
+            lista.splice(index, 1);
+            salvarListaNomesStorage(tipoCadastroNomesAtivo, lista);
+            popularSelectNomes(tipoCadastroNomesAtivo);
+            renderizarListaModalNomes();
+        }
+
+        // --- LOGIN E ACESSO AO PAINEL ---
         function entrarDiretoNoSistema() {
             document.getElementById('login-screen').style.display = 'none';
             document.getElementById('gerador-screen').style.display = 'none';
@@ -1665,16 +2021,11 @@
         }
         
         document.getElementById('modal-input').addEventListener('keypress', function(e) { 
-            if (e.key === 'Enter') {
-                confirmarModal(); 
-            }
+            if (e.key === 'Enter') confirmarModal(); 
         });
 
-        // --- LOGIN ---
         function verificarEnter(event) { 
-            if (event.key === "Enter") {
-                entrar(); 
-            }
+            if (event.key === "Enter") entrar(); 
         }
 
         function entrar() {
@@ -1713,11 +2064,12 @@
             const btnVoltar = document.getElementById('btn-voltar-gerador');
             if (usuarioAtivo) {
                 btnVoltar.innerHTML = '<i class="fa-solid fa-arrow-left"></i> Voltar ao Painel';
-                if (!document.getElementById('ger-instrutor').value) {
-                    document.getElementById('ger-instrutor').value = usuarioAtivo.toUpperCase();
-                }
+                const nomeUpper = usuarioAtivo.toUpperCase();
                 if (!document.getElementById('ger-emitido-por').value) {
-                    document.getElementById('ger-emitido-por').value = usuarioAtivo.toUpperCase();
+                    const listaEm = getListaNomesStorage('emissores');
+                    if (listaEm.includes(nomeUpper)) {
+                        document.getElementById('ger-emitido-por').value = nomeUpper;
+                    }
                 }
             } else {
                 btnVoltar.innerHTML = '<i class="fa-solid fa-lock"></i> Voltar ao Login';
@@ -1799,10 +2151,55 @@
         }
 
         // =========================================================================
-        // NORMALIZADORES E PARSER DO PDF DO CGD (PDF.js)
+        // PARSER BLINDADO DO PDF DO CGD (ANCORADO EM HORÁRIO + MATRÍCULA)
         // =========================================================================
         function removerAcentos(str) {
             return (str || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+        }
+
+        function ehTextoLixoRodapeCabecalho(texto) {
+            const limpo = removerAcentos(texto || '').toLowerCase().trim();
+            if (!limpo) return true;
+            return (
+                /pagina\s*\d+/i.test(limpo) ||
+                /\bpag\.?\s*\d+/i.test(limpo) ||
+                /^de\s*\d+$/i.test(limpo) ||
+                limpo.includes('educ centro de ensino') ||
+                limpo.includes('app.cgd.com.br') ||
+                limpo.includes('relatorio de alunos') ||
+                limpo.includes('impresso em') ||
+                limpo.includes('emitido em') ||
+                limpo.includes('total de alunos') ||
+                /^\d+\s*\/\s*\d+$/.test(limpo) ||
+                /^\d{2}\/\d{2}\/\d{4}(,?\s+\d{2}:\d{2})?$/.test(limpo)
+            );
+        }
+
+        function limparResiduosRodape(texto) {
+            return (texto || '')
+                .replace(/p[aá]gina\s*\d+\s*(de|\/)\s*\d+/gi, '')
+                .replace(/p[aá]gina\s*\d+/gi, '')
+                .replace(/educ\s+centro\s+de\s+ensino/gi, '')
+                .replace(/\s+/g, ' ')
+                .trim();
+        }
+
+        function ehNomeAlunoValido(nome) {
+            const n = limparResiduosRodape(nome);
+            if (n.length < 3) return false;
+            if (ehTextoLixoRodapeCabecalho(n)) return false;
+            // Deve conter pelo menos 3 letras e não ser um número isolado
+            const letras = (n.match(/[A-Za-zÀ-ÿ]/g) || []).length;
+            if (letras < 3) return false;
+            // Evita cabeçalhos de coluna
+            const low = removerAcentos(n).toLowerCase();
+            if (['aluno', 'aluno(a)', 'nome', 'contrato', 'matricula', 'sala', 'horario', 'dia'].includes(low)) return false;
+            return true;
+        }
+
+        function ehMatriculaValida(valor) {
+            const v = (valor || '').trim();
+            return /^\d{2,7}$/.test(v);
         }
 
         function normalizarDiaSemana(texto) {
@@ -1865,9 +2262,7 @@
 
         function processarUploadPDF(event) {
             const file = event.target.files[0];
-            if (file) {
-                lerArquivoPDF(file);
-            }
+            if (file) lerArquivoPDF(file);
             event.target.value = '';
         }
 
@@ -1875,7 +2270,7 @@
             const statusEl = document.getElementById('status-varredura');
             statusEl.className = 'status-varredura';
             statusEl.style.display = 'block';
-            statusEl.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Lendo PDF e organizando turmas e laboratórios...';
+            statusEl.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Lendo PDF e filtrando horários e matrículas...';
 
             try {
                 const arrayBuffer = await file.arrayBuffer();
@@ -1886,31 +2281,41 @@
 
                 for (let p = 1; p <= pdf.numPages; p++) {
                     const page = await pdf.getPage(p);
+                    const viewport = page.getViewport({ scale: 1 });
+                    const pageHeight = viewport.height;
                     const textContent = await page.getTextContent();
+
                     const itens = textContent.items
                         .map(it => ({
-                            str: (it.str || '').trim(),
+                            str: limparResiduosRodape(it.str || ''),
+                            raw: (it.str || '').trim(),
                             x: it.transform[4],
                             y: it.transform[5]
                         }))
-                        .filter(it => it.str.length > 0);
+                        .filter(it => {
+                            if (!it.str) return false;
+                            // Filtra rodapés/cabeçalhos já no nível do item
+                            if (ehTextoLixoRodapeCabecalho(it.raw)) return false;
+                            // Descarta margem extrema inferior/superior se não for número de matrícula
+                            if (it.y < 22 || it.y > pageHeight - 18) return false;
+                            return true;
+                        });
 
                     // Agrupa itens na mesma linha visual (tolerância vertical de 4.5pt)
                     const linhasPagina = [];
                     itens.forEach(item => {
                         let linha = linhasPagina.find(l => Math.abs(l.y - item.y) <= 4.5);
                         if (!linha) {
-                            linha = { y: item.y, itens: [] };
+                            linha = { page: p, y: item.y, itens: [] };
                             linhasPagina.push(linha);
                         }
                         linha.itens.push(item);
                     });
 
-                    // Ordena de cima para baixo e esquerda para direita
                     linhasPagina.sort((a, b) => b.y - a.y);
                     linhasPagina.forEach(l => l.itens.sort((a, b) => a.x - b.x));
 
-                    // Detecta posições X das colunas a partir do cabeçalho
+                    // Detecta posições X das colunas a partir do cabeçalho da tabela
                     if (!colX) {
                         for (const l of linhasPagina) {
                             const textoLinha = removerAcentos(l.itens.map(i => i.str).join(' ')).toLowerCase();
@@ -1923,7 +2328,7 @@
                                 const xHor = findX('horario');
                                 const xSala = findX('sala');
                                 const xAluno = findX('aluno');
-                                const xContrato = findX('contrato');
+                                const xContrato = findX('contrato') ?? findX('matric');
                                 if (xHor !== null && xSala !== null && xAluno !== null) {
                                     colX = {
                                         dia: xDia ?? 0,
@@ -1942,7 +2347,6 @@
                 }
 
                 if (!colX) {
-                    // Fallback proporcional caso o PDF não tenha cabeçalho padrão explícito
                     colX = { dia: 0, horario: 95, sala: 175, aluno: 290, contrato: 500 };
                 }
 
@@ -1951,7 +2355,7 @@
             } catch (err) {
                 console.error(err);
                 statusEl.className = 'status-varredura erro';
-                statusEl.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> Não foi possível ler o PDF: ${err.message}. Você pode tentar a opção "Colar tabela copiada do CGD".`;
+                statusEl.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> Não foi possível ler o PDF: ${err.message}. Tente a opção "Colar Tabela".`;
             }
         }
 
@@ -1971,13 +2375,10 @@
                 const textoCompleto = linha.itens.map(i => i.str).join(' ').trim();
                 const textoLimpo = removerAcentos(textoCompleto).toLowerCase();
 
-                // Ignora cabeçalhos repetidos e rodapés de impressão do navegador/CGD
+                // Ignora cabeçalhos repetidos e qualquer linha de rodapé
                 if (
-                    (textoLimpo.includes('dia') && textoLimpo.includes('horario') && textoLimpo.includes('aluno')) ||
-                    textoLimpo.includes('app.cgd.com.br') ||
-                    textoLimpo.startsWith('relatorio de alunos') ||
-                    /^\d+\/\d+$/.test(textoCompleto) ||
-                    /^\d{2}\/\d{2}\/\d{4},?\s+\d{2}:\d{2}/.test(textoCompleto)
+                    ehTextoLixoRodapeCabecalho(textoCompleto) ||
+                    (textoLimpo.includes('dia') && textoLimpo.includes('horario') && textoLimpo.includes('aluno'))
                 ) {
                     continue;
                 }
@@ -1994,13 +2395,13 @@
 
                 const txtDia = cDia.join(' ').trim();
                 const txtHor = cHor.join(' ').trim();
-                const txtSala = cSala.join(' ').trim();
-                let txtAluno = cAluno.join(' ').trim();
+                const txtSala = limparResiduosRodape(cSala.join(' ').trim());
+                let txtAluno = limparResiduosRodape(cAluno.join(' ').trim());
                 let txtContrato = cContrato.join(' ').trim();
 
-                // Caso o contrato tenha ficado colado ao final da coluna Aluno
-                if (!txtContrato && /\s(\d{3,6})$/.test(txtAluno)) {
-                    const m = txtAluno.match(/^(.*)\s(\d{3,6})$/);
+                // Se a matrícula numérica ficou colada ao fim da coluna Aluno
+                if (!txtContrato && /\s(\d{2,7})$/.test(txtAluno)) {
+                    const m = txtAluno.match(/^(.*)\s(\d{2,7})$/);
                     txtAluno = m[1].trim();
                     txtContrato = m[2].trim();
                 }
@@ -2012,7 +2413,7 @@
                 if (diaNorm) diaAtual = diaNorm;
                 if (horNorm) horarioAtual = horNorm;
 
-                if (txtSala) {
+                if (txtSala && !ehTextoLixoRodapeCabecalho(txtSala)) {
                     if (mudouGrupo || !ultimaLinhaTinhaSala) {
                         salaAtualObj = { nome: txtSala };
                     } else if (salaJaEstaCompleta(salaAtualObj.nome) && textoComecaNovaSala(txtSala)) {
@@ -2025,23 +2426,40 @@
                     ultimaLinhaTinhaSala = false;
                 }
 
-                if (txtAluno && diaAtual && horarioAtual) {
-                    // Se o nome de um aluno quebrou em 2 linhas (sem contrato, sem dia/horário/sala novos)
-                    if (!txtContrato && !mudouGrupo && !txtSala && lista.length > 0 && lista[lista.length - 1].contrato && txtAluno.split(' ').length <= 3) {
-                        lista[lista.length - 1].aluno += ' ' + txtAluno;
-                    } else {
-                        lista.push({
-                            dia: diaAtual,
-                            horario: horarioAtual,
-                            salaRef: salaAtualObj,
-                            aluno: txtAluno,
-                            contrato: txtContrato.replace(/\D/g, '') || txtContrato
-                        });
-                    }
+                // Extrai somente a matrícula numérica válida (ex.: 2593, 3304)
+                const matchMat = txtContrato.match(/\b(\d{2,7})\b/);
+                const matriculaLimpa = matchMat ? matchMat[1] : '';
+
+                // CRITÉRIO PRINCIPAL: Horário + Matrícula numérica + Nome válido
+                if (diaAtual && horarioAtual && ehMatriculaValida(matriculaLimpa) && ehNomeAlunoValido(txtAluno)) {
+                    lista.push({
+                        dia: diaAtual,
+                        horario: horarioAtual,
+                        salaRef: salaAtualObj,
+                        aluno: txtAluno,
+                        contrato: matriculaLimpa,
+                        page: linha.page,
+                        y: linha.y
+                    });
+                } else if (
+                    // Continuação de nome longo quebrado na linha imediatamente abaixo (mesma página, sem números, sem lixo)
+                    !matriculaLimpa &&
+                    !mudouGrupo &&
+                    !txtSala &&
+                    txtAluno &&
+                    lista.length > 0 &&
+                    lista[lista.length - 1].page === linha.page &&
+                    (lista[lista.length - 1].y - linha.y) > 0 &&
+                    (lista[lista.length - 1].y - linha.y) <= 15 &&
+                    /^[A-Za-zÀ-ÿ\s'-]+$/.test(txtAluno) &&
+                    !ehTextoLixoRodapeCabecalho(txtAluno) &&
+                    txtAluno.split(' ').length <= 3
+                ) {
+                    lista[lista.length - 1].aluno += ' ' + txtAluno;
+                    lista[lista.length - 1].y = linha.y;
                 }
             }
 
-            // Resolve o nome completo das salas (incluindo quebras de linha como "Laboratório de Ensino" + "Continuado Éter")
             return lista.map(item => ({
                 dia: item.dia,
                 horario: item.horario,
@@ -2060,6 +2478,7 @@
             let salaAtual = '';
 
             linhas.forEach(linha => {
+                if (ehTextoLixoRodapeCabecalho(linha)) return;
                 const cols = linha.split('\t').map(c => c.trim());
                 const linhaLow = removerAcentos(linha).toLowerCase();
                 if (linhaLow.includes('dia') && linhaLow.includes('horario') && linhaLow.includes('aluno')) return;
@@ -2070,12 +2489,12 @@
                     if (d) diaAtual = d;
                     if (h) horarioAtual = h;
                     if (cols[2]) salaAtual = cols[2];
-                    if (cols[3] && diaAtual && horarioAtual) {
+                    if (diaAtual && horarioAtual && ehNomeAlunoValido(cols[3]) && ehMatriculaValida(cols[4])) {
                         lista.push({ dia: diaAtual, horario: horarioAtual, sala: salaAtual, aluno: cols[3], contrato: cols[4] });
                     }
-                } else if (cols.length === 2 && diaAtual && horarioAtual) {
+                } else if (cols.length === 2 && diaAtual && horarioAtual && ehNomeAlunoValido(cols[0]) && ehMatriculaValida(cols[1])) {
                     lista.push({ dia: diaAtual, horario: horarioAtual, sala: salaAtual, aluno: cols[0], contrato: cols[1] });
-                } else if (cols.length === 3 && diaAtual && horarioAtual) {
+                } else if (cols.length === 3 && diaAtual && horarioAtual && ehNomeAlunoValido(cols[1]) && ehMatriculaValida(cols[2])) {
                     if (cols[0]) salaAtual = cols[0];
                     lista.push({ dia: diaAtual, horario: horarioAtual, sala: salaAtual, aluno: cols[1], contrato: cols[2] });
                 }
@@ -2090,7 +2509,7 @@
 
             if (!extraidos || extraidos.length === 0) {
                 statusEl.className = 'status-varredura erro';
-                statusEl.innerHTML = `<i class="fa-solid fa-circle-exclamation"></i> Nenhum aluno encontrado em "${origem}". Verifique se o PDF contém a tabela do relatório do CGD (Dia, Horário, Sala, Aluno, Contrato).`;
+                statusEl.innerHTML = `<i class="fa-solid fa-circle-exclamation"></i> Nenhum aluno com matrícula válida encontrado em "${origem}". Verifique se o PDF contém a tabela do CGD.`;
                 return;
             }
 
@@ -2101,11 +2520,8 @@
             statusEl.className = 'status-varredura';
             statusEl.innerHTML = `
                 <i class="fa-solid fa-circle-check"></i>
-                <strong>${extraidos.length}</strong> aluno(s) lido(s) de <strong>${origem}</strong>!<br>
-                <span style="font-weight:400;">
-                    Dias no arquivo: <strong>${diasEncontrados.join(', ')}</strong> |
-                    Salas identificadas: <strong>${salasEncontradas.join(' • ')}</strong>
-                </span>
+                <strong>${extraidos.length}</strong> aluno(s) validado(s) por horário e matrícula (${origem}) &nbsp;|&nbsp;
+                <span style="font-weight:400;">Dias: <strong>${diasEncontrados.join(', ')}</strong> • Salas: <strong>${salasEncontradas.join(' / ')}</strong></span>
             `;
 
             document.getElementById('box-colar-cgd').style.display = 'none';
@@ -2113,7 +2529,7 @@
         }
 
         // =========================================================================
-        // AGRUPAMENTO (2 MODELOS) E RENDERIZAÇÃO DAS FICHAS
+        // AGRUPAMENTO (2 MODELOS) E RENDERIZAÇÃO DAS FICHAS EM PAISAGEM
         // =========================================================================
         function selecionarModeloFicha(modelo) {
             modeloFichaAtivo = modelo;
@@ -2133,7 +2549,7 @@
                 const infoSala = classificarSala(reg.sala);
 
                 if (infoSala.modelo === 'regulares') {
-                    // Regra: Éter e Estação Elos no mesmo dia e horário SE UNEM
+                    // Éter + Estação Elos no mesmo dia e horário se unem
                     const chave = reg.horario;
                     if (!gruposRegularesMap[chave]) {
                         gruposRegularesMap[chave] = {
@@ -2149,7 +2565,7 @@
                     gruposRegularesMap[chave].tiposSet.add(infoSala.tipo);
                     gruposRegularesMap[chave].alunos.push({ ...reg, tipoSala: infoSala.tipo });
                 } else {
-                    // Modelo 2: Laboratório Boreal e Práticas Profissionalizantes
+                    // Práticas Profissionalizantes / Laboratório Boreal
                     const chave = unirPraticas ? reg.horario : `${reg.horario}__${reg.sala}`;
                     if (!gruposPraticasMap[chave]) {
                         gruposPraticasMap[chave] = {
@@ -2170,17 +2586,16 @@
             const finalizarListaGrupos = (mapa) => {
                 return Object.values(mapa)
                     .map(g => {
-                        // Remove eventual duplicata exata (mesmo aluno + contrato na mesma lista)
+                        // Evita duplicata exata pela matrícula dentro do mesmo horário
                         const vistos = new Set();
                         const unicos = [];
                         g.alunos.forEach(a => {
-                            const k = `${removerAcentos(a.aluno).toLowerCase()}|${a.contrato}`;
+                            const k = `${a.contrato}|${removerAcentos(a.aluno).toLowerCase()}`;
                             if (!vistos.has(k)) {
                                 vistos.add(k);
                                 unicos.push(a);
                             }
                         });
-                        // Ordena alfabeticamente pelo nome do aluno
                         unicos.sort((a, b) => a.aluno.localeCompare(b.aluno, 'pt-BR'));
                         g.alunos = unicos;
                         g.salas = Array.from(g.salasSet);
@@ -2207,15 +2622,6 @@
             return grupo.salas.join(' / ').toUpperCase();
         }
 
-        function gerarLogoEducSVG() {
-            return `
-                <svg width="96" height="44" viewBox="0 0 180 80" xmlns="http://www.w3.org/2000/svg">
-                    <text x="90" y="48" text-anchor="middle" font-family="Poppins, Arial, sans-serif" font-weight="700" font-size="52" fill="#F39C12" letter-spacing="-2">educ</text>
-                    <text x="90" y="68" text-anchor="middle" font-family="Poppins, Arial, sans-serif" font-weight="600" font-size="16" fill="#5D4037" letter-spacing="0.5">Centro de ensino</text>
-                </svg>
-            `;
-        }
-
         function construirHTMLFicha(grupo, idx) {
             const dataIso = document.getElementById('ger-data').value;
             const [ano, mes, dia] = dataIso ? dataIso.split('-') : ['', '', ''];
@@ -2237,7 +2643,6 @@
                 ? 'REGISTRO DE FREQUÊNCIA DIÁRIA — PRÁTICAS PROFISSIONALIZANTES'
                 : 'REGISTRO DE FREQUÊNCIA DIÁRIA';
 
-            // Regra: sempre no mínimo 35 regulares; se Éter + Elos ultrapassar 35, expande automaticamente
             const totalLinhasRegulares = Math.max(minLinhas, grupo.alunos.length);
 
             let linhasHTML = '';
@@ -2255,7 +2660,6 @@
                 `;
             }
 
-            // 2 campos de Reposições do Dia
             linhasHTML += `
                 <tr class="ficha-faixa-rep">
                     <td colspan="5">REPOSIÇÕES DO DIA</td>
@@ -2271,7 +2675,9 @@
                 <div class="ficha-folha" id="ficha-folha-${idx}">
                     <table class="ficha-cabecalho-box">
                         <tr>
-                            <td class="ficha-logo-cell">${gerarLogoEducSVG()}</td>
+                            <td class="ficha-logo-cell">
+                                <img src="${URL_LOGO_EDUC}" alt="Educ Centro de Ensino" class="ficha-logo-img" crossorigin="anonymous">
+                            </td>
                             <td class="ficha-escola-info">
                                 <strong>Educ Centro de Ensino</strong>
                                 Rua João Pessoa, 216 - Centro, Aracaju - SE, 49010-130<br>
@@ -2301,11 +2707,11 @@
                     <table class="ficha-tabela-alunos">
                         <thead>
                             <tr>
-                                <th style="width: 5%;">O/</th>
-                                <th style="width: 34%;">ALUNO(A)</th>
-                                <th style="width: 11%;">MATRÍCULA</th>
-                                <th style="width: 32%;">ASSINATURA DO ALUNO(A)</th>
-                                <th style="width: 18%;">OBSERVAÇÕES RELEVANTES</th>
+                                <th style="width: 3.5%;">O/</th>
+                                <th style="width: 31.5%;">ALUNO(A)</th>
+                                <th style="width: 8%;">MATRÍCULA</th>
+                                <th style="width: 36%;">ASSINATURA DO ALUNO(A)</th>
+                                <th style="width: 21%;">OBSERVAÇÕES RELEVANTES</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -2361,11 +2767,10 @@
                 const diasComAula = [...new Set(alunosImportados.map(a => a.dia))];
                 container.innerHTML = `
                     <div class="aviso-vazio-gerador">
-                        <i class="fa-solid fa-calendar-xmark" style="font-size: 36px; color: var(--laranja); margin-bottom: 10px;"></i>
-                        <h3 style="color: var(--marrom); margin-bottom: 6px;">Nenhuma turma encontrada para ${diaSelecionado} (${dataBR}) neste modelo</h3>
-                        <p style="font-size: 12px;">
-                            Dias disponíveis no PDF importado: <strong>${diasComAula.join(', ')}</strong>.<br>
-                            Altere a <strong>Data da Aula</strong> acima ou troque para a outra aba de modelo.
+                        <i class="fa-solid fa-calendar-xmark" style="font-size: 30px; color: var(--laranja); margin-bottom: 8px;"></i>
+                        <h3 style="color: var(--marrom); font-size: 14px; margin-bottom: 4px;">Nenhuma turma encontrada para ${diaSelecionado} (${dataBR}) neste modelo</h3>
+                        <p style="font-size: 11.5px;">
+                            Dias disponíveis no PDF: <strong>${diasComAula.join(', ')}</strong>. Altere a <strong>Data da Aula</strong> acima ou troque de aba.
                         </p>
                     </div>
                 `;
@@ -2417,10 +2822,10 @@
                             </div>
                             <div class="card-turma-botoes">
                                 <button type="button" class="btn-acao btn-marrom btn-sm" onclick="alternarPreviewFicha(${idx})">
-                                    <i class="fa-solid fa-eye"></i> Mostrar / Ocultar
+                                    <i class="fa-solid fa-eye"></i> Visualizar Ficha
                                 </button>
                                 <button type="button" class="btn-acao btn-laranja btn-sm" onclick="imprimirFichaUnica(${idx})">
-                                    <i class="fa-solid fa-print"></i> Imprimir Ficha
+                                    <i class="fa-solid fa-print"></i> Imprimir
                                 </button>
                                 <button type="button" class="btn-acao btn-azul btn-sm" onclick="baixarPDFFichaUnica(${idx})">
                                     <i class="fa-solid fa-file-pdf"></i> PDF
@@ -2432,10 +2837,10 @@
                         <div class="painel-vinculo-presenca">
                             <div class="painel-vinculo-titulo">
                                 <i class="fa-solid fa-link" style="color:var(--laranja);"></i>
-                                Vincular ao Controle de Presenças (${dataBR}) — requer senha do colaborador
+                                Lançar no Controle de Presenças (${dataBR}) — requer senha do colaborador
                             </div>
                             <div class="linha-frequencia">
-                                <div class="campo" style="flex: 1.6; min-width: 190px;">
+                                <div class="campo" style="flex: 1.6; min-width: 180px;">
                                     <label>TURMA NO CONTROLE</label>
                                     <select id="vinc-turma-${idx}">${opcoesTurmaSelect}</select>
                                 </div>
@@ -2459,14 +2864,14 @@
                                     <label>FALTAS</label>
                                     <input type="number" id="vinc-faltas-${idx}" readonly value="${grupo.alunos.length}">
                                 </div>
-                                <button type="button" class="btn-acao btn-verde" style="flex: 1.4; min-width: 180px;" onclick="lancarDoGeradorParaControle(${idx})">
-                                    <i class="fa-solid fa-lock"></i> Lançar no Controle
+                                <button type="button" class="btn-acao btn-verde" style="flex: 1.3; min-width: 165px;" onclick="lancarDoGeradorParaControle(${idx})">
+                                    <i class="fa-solid fa-lock"></i> Lançar
                                 </button>
                             </div>
                         </div>
 
-                        <!-- PRÉ-VISUALIZAÇÃO DA FICHA PRONTA PARA ASSINAR -->
-                        <div class="preview-wrapper" id="preview-wrapper-${idx}">
+                        <!-- PRÉ-VISUALIZAÇÃO DA FICHA (OCULTA POR PADRÃO PARA MANTER A TELA ENXUTA) -->
+                        <div class="preview-wrapper" id="preview-wrapper-${idx}" style="display:none;">
                             ${construirHTMLFicha(grupo, idx)}
                         </div>
                     </div>
@@ -2528,7 +2933,6 @@
                     aviso.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Verificando duplicidade na planilha...';
                     aviso.style.display = 'block';
 
-                    // Consulta a planilha antes para garantir 0 sobrescrita e 0 duplicidade
                     fetch(URL_DO_APPS_SCRIPT)
                         .then(res => res.text())
                         .then(texto => {
@@ -2598,41 +3002,42 @@
         }
 
         // =========================================================================
-        // IMPRESSÃO E PDF DAS FICHAS DE PRESENÇA (A4 RETRATO ISOLADO)
+        // IMPRESSÃO E PDF DAS FICHAS DE PRESENÇA (A4 PAISAGEM)
         // =========================================================================
         function getEstilosImpressaoFicha() {
             return `
-                @page { size: A4 portrait; margin: 6mm; }
+                @page { size: A4 landscape; margin: 5mm 6mm; }
                 * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Calibri', 'Arial', sans-serif; }
                 body { background: #fff; color: #000; }
                 .ficha-pagina { page-break-after: always; break-after: page; }
                 .ficha-pagina:last-child { page-break-after: auto; break-after: auto; }
                 .ficha-folha { width: 100%; padding: 0; box-shadow: none; background: #fff; color: #000; }
-                .ficha-cabecalho-box { width: 100%; border-collapse: collapse; border: 1.5px solid #000; margin-bottom: 4px; }
-                .ficha-cabecalho-box td { border: 1px solid #000; padding: 3px 8px; vertical-align: middle; }
-                .ficha-logo-cell { width: 120px; text-align: center; }
-                .ficha-escola-info { text-align: center; font-size: 9.5px; line-height: 1.25; }
-                .ficha-escola-info strong { font-size: 11px; display: block; }
-                .ficha-titulo-principal { text-align: center; font-size: 12.5px; font-weight: 700; padding: 4px 0 3px 0; text-transform: uppercase; }
-                .ficha-meta-table { width: 100%; border-collapse: collapse; margin-bottom: 4px; font-size: 10px; }
-                .ficha-meta-table td { padding: 1.5px 3px; text-align: left; white-space: nowrap; }
+                .ficha-cabecalho-box { width: 100%; border-collapse: collapse; border: 1.5px solid #000; margin-bottom: 3px; }
+                .ficha-cabecalho-box td { border: 1px solid #000; padding: 2px 8px; vertical-align: middle; }
+                .ficha-logo-cell { width: 150px; text-align: center; }
+                .ficha-logo-img { max-height: 36px; max-width: 135px; width: auto; object-fit: contain; display: block; margin: 0 auto; }
+                .ficha-escola-info { text-align: center; font-size: 9px; line-height: 1.2; }
+                .ficha-escola-info strong { font-size: 10.5px; display: block; }
+                .ficha-titulo-principal { text-align: center; font-size: 11.5px; font-weight: 700; padding: 2px 0; text-transform: uppercase; }
+                .ficha-meta-table { width: 100%; border-collapse: collapse; margin-bottom: 3px; font-size: 9.2px; }
+                .ficha-meta-table td { padding: 1px 4px; text-align: left; white-space: nowrap; }
                 .ficha-meta-label { font-weight: 700; }
                 .ficha-tabela-alunos { width: 100%; border-collapse: collapse; border: 1.5px solid #000; }
                 .ficha-tabela-alunos thead { display: table-header-group; }
-                .ficha-tabela-alunos th { border: 1px solid #000; padding: 3.5px 4px; font-size: 10px; font-weight: 700; text-align: center; background: #fff; color: #000; }
-                .ficha-tabela-alunos td { border: 1px solid #000; padding: 1.5px 5px; height: 19px; font-size: 10px; color: #000; }
+                .ficha-tabela-alunos th { border: 1px solid #000; padding: 2.5px 4px; font-size: 9.2px; font-weight: 700; text-align: center; background: #fff; color: #000; }
+                .ficha-tabela-alunos td { border: 1px solid #000; padding: 1px 5px; height: 14.2px; font-size: 9px; line-height: 1.1; color: #000; }
                 .ficha-tabela-alunos td.col-ord, .ficha-tabela-alunos td.col-mat { text-align: center; }
-                .ficha-tabela-alunos tr.ficha-faixa-rep td { text-align: center; font-weight: 700; padding: 3.5px; height: auto; border-top: 1.5px solid #000; border-bottom: 1.5px solid #000; }
-                .ficha-rodape { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 14px; font-size: 10px; gap: 12px; }
+                .ficha-tabela-alunos tr.ficha-faixa-rep td { text-align: center; font-weight: 700; padding: 2px; height: auto; border-top: 1.5px solid #000; border-bottom: 1.5px solid #000; }
+                .ficha-rodape { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 9px; font-size: 9.2px; gap: 14px; }
                 .ficha-rodape-emitido { display: flex; align-items: flex-end; gap: 6px; }
-                .ficha-linha-assinatura { display: inline-block; border-bottom: 1px solid #000; min-width: 145px; padding: 0 4px; }
-                .ficha-linha-assinatura-centro { flex: 1; max-width: 220px; border-bottom: 1px solid #000; height: 13px; }
+                .ficha-linha-assinatura { display: inline-block; border-bottom: 1px solid #000; min-width: 190px; padding: 0 4px; }
+                .ficha-linha-assinatura-centro { flex: 1; max-width: 340px; border-bottom: 1px solid #000; height: 12px; }
                 .ficha-rodape-datahora { white-space: nowrap; }
             `;
         }
 
         function abrirJanelaImpressaoFichas(htmlPaginas, tituloDoc) {
-            const win = window.open('', '_blank', 'width=900,height=700');
+            const win = window.open('', '_blank', 'width=1100,height=700');
             if (!win) {
                 mostrarModal("Pop-up Bloqueado", "Libere pop-ups para este site ou use o botão 'PDF' para baixar o arquivo.", "fa-window-restore", "var(--laranja)", "alerta");
                 return;
@@ -2652,7 +3057,7 @@
             win.focus();
             setTimeout(() => {
                 win.print();
-            }, 350);
+            }, 450);
         }
 
         function imprimirFichaUnica(idx) {
@@ -2683,11 +3088,11 @@
             folha.style.width = '100%';
 
             const opt = {
-                margin: [6, 6, 6, 6],
+                margin: [5, 6, 5, 6],
                 filename: `Lista_Presenca_${dataIso}_${horarioSlug}.pdf`,
                 image: { type: 'jpeg', quality: 0.98 },
                 html2canvas: { scale: 2, useCORS: true },
-                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' },
                 pagebreak: { mode: ['css', 'legacy'] }
             };
             html2pdf().set(opt).from(folha).save();
@@ -2714,11 +3119,11 @@
             });
 
             const opt = {
-                margin: [6, 6, 6, 6],
+                margin: [5, 6, 5, 6],
                 filename: `Listas_Presenca_${tipoNome}_${dataIso}.pdf`,
                 image: { type: 'jpeg', quality: 0.98 },
                 html2canvas: { scale: 2, useCORS: true },
-                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' },
                 pagebreak: { mode: ['css', 'legacy'] }
             };
             html2pdf().set(opt).from(containerTemp).save();
