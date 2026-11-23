@@ -227,24 +227,25 @@
             box-shadow: 0 0 0 #C0392B;
         }
 
-        .btn-azul { 
-            background-color: #2980b9; 
-            box-shadow: 0 4px 0 #1c5982; 
+      .btn-azul { 
+            background-color: #616A6B; 
+            box-shadow: 0 4px 0 #424949; 
         }
 
         .btn-azul:active { 
             transform: translateY(4px); 
-            box-shadow: 0 0 0 #1c5982;
+            box-shadow: 0 0 0 #424949;
         }
 
         .btn-verde {
-            background-color: var(--verde);
-            box-shadow: 0 4px 0 #1E8449;
+            background-color: var(--dourado);
+            color: #3E2723 !important;
+            box-shadow: 0 4px 0 #A6831B;
         }
 
         .btn-verde:active {
             transform: translateY(4px);
-            box-shadow: 0 0 0 #1E8449;
+            box-shadow: 0 0 0 #A6831B;
         }
 
         .btn-dourado-outline {
@@ -958,16 +959,25 @@
             border-color: var(--laranja);
         }
 
-        .btn-encaminhar-aluno.encaminhado {
-            background: #EAFAF1;
-            color: #1E8449;
-            border-color: #82E0AA;
+     .btn-encaminhar-aluno.encaminhado {
+            background: var(--dourado);
+            color: #3E2723;
+            border-color: #A6831B;
         }
 
         .painel-encaminhar-rapido {
             padding: 12px 15px;
             background: #F8F9FA;
             border-bottom: 1px solid var(--cinza-borda);
+        }
+
+        .painel-encaminhar-topo {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 8px;
         }
 
         .grid-alunos-encaminhar {
@@ -1546,7 +1556,7 @@
                     <span class="badge-sem-senha"><i class="fa-solid fa-unlock"></i> Acesso Livre</span>
                     <h2>Listas de Presença</h2>
                     <p class="desc-livre">
-                        Envie o PDF de alunos do CGD para montar e imprimir automaticamente as fichas em paisagem (Éter/Elos e Práticas).
+                        Gerador de lista de Presença Diária.
                     </p>
                 </div>
                 <div>
@@ -1934,7 +1944,7 @@
         let turmasLancadasSessao = {};
         let tipoCadastroNomesAtivo = 'instrutores';
 
-        // Estado da Ficha de Práticas Profissionalizantes (padronizada com 20 linhas, sem reposições e editável)
+       // Estado da Ficha de Práticas Profissionalizantes (padronizada com 20 linhas, sem reposições e editável)
         let fichaPraticaEditavel = {
             inicializada: false,
             sala: SALAS_OFICIAIS[0],
@@ -1944,6 +1954,8 @@
             turmaLetra: 'A',
             periodo: 'MATUTINO',
             professor: '',
+            curso: '',
+            tematica: '',
             emitidoPor: '',
             minLinhas: 20,
             alunos: []
@@ -2830,10 +2842,53 @@
             atualizarBadgePraticas();
         }
 
-        function construirHTMLFicha(grupo, idx, paraImpressao = false) {
+        function encaminharTodosDaTurma(idxTurma, selecionarTodos) {
+            const grupo = fichasAtuaisCache[idxTurma];
+            if (!grupo) return;
+            inicializarFichaPraticaSeNecessario();
+
+            if (selecionarTodos) {
+                grupo.alunos.forEach((al, iAl) => {
+                    if (!alunoEstaNaPratica(al.aluno, al.contrato)) {
+                        fichaPraticaEditavel.alunos.push({
+                            aluno: al.aluno,
+                            contrato: al.contrato,
+                            origemHorario: grupo.horario
+                        });
+                    }
+                    document.querySelectorAll(`[data-btn-enc="${idxTurma}-${iAl}"]`).forEach(btn => {
+                        btn.classList.add('encaminhado');
+                        btn.title = 'Já encaminhado para Práticas (clique para remover)';
+                        btn.innerHTML = '<i class="fa-solid fa-check"></i> Prática';
+                    });
+                });
+                fichaPraticaEditavel.alunos.sort((a, b) => a.aluno.localeCompare(b.aluno, 'pt-BR'));
+
+                const info = mapearTurmaSistema(grupo.horario);
+                if (HORARIOS_OFICIAIS.includes(grupo.horario)) fichaPraticaEditavel.horario = grupo.horario;
+                if (info.letra) fichaPraticaEditavel.turmaLetra = info.letra;
+                if (info.periodo) fichaPraticaEditavel.periodo = info.periodo;
+
+                mostrarAvisoRapido(`Todos os ${grupo.alunos.length} alunos encaminhados para Práticas!`);
+            } else {
+                const chavesTurma = new Set(grupo.alunos.map(a => chaveAlunoPratica(a.aluno, a.contrato)));
+                fichaPraticaEditavel.alunos = fichaPraticaEditavel.alunos.filter(a => !chavesTurma.has(chaveAlunoPratica(a.aluno, a.contrato)));
+                grupo.alunos.forEach((_, iAl) => {
+                    document.querySelectorAll(`[data-btn-enc="${idxTurma}-${iAl}"]`).forEach(btn => {
+                        btn.classList.remove('encaminhado');
+                        btn.title = 'Encaminhar aluno para ficha de Práticas';
+                        btn.innerHTML = '<i class="fa-solid fa-share"></i> Enviar';
+                    });
+                });
+                mostrarAvisoRapido('Alunos desta turma removidos da ficha de Práticas.');
+            }
+
+            atualizarBadgePraticas();
+        }
+
+function construirHTMLFicha(grupo, idx, paraImpressao = false) {
             const custom = grupo.customMeta || null;
             const ehPratica = grupo.modelo === 'praticas';
-            const mostrarColunaFixa = !paraImpressao && !ehPratica;
 
             const dataIso = custom ? custom.data : document.getElementById('ger-data').value;
             const [ano, mes, dia] = dataIso ? dataIso.split('-') : ['', '', ''];
@@ -2860,61 +2915,79 @@
                 : 'REGISTRO DE FREQUÊNCIA DIÁRIA';
 
             const totalLinhas = Math.max(minLinhas, grupo.alunos.length);
-
             let linhasHTML = '';
-            for (let i = 0; i < totalLinhas; i++) {
-                const al = grupo.alunos[i];
-                const obs = (!ehPratica && al && marcarElos && al.tipoSala === 'elos') ? 'Estação Elos' : '';
 
-                let celulaEncaminhar = '';
-                if (mostrarColunaFixa) {
-                    if (al) {
-                        const jaFoi = alunoEstaNaPratica(al.aluno, al.contrato);
-                        celulaEncaminhar = `
-                            <td class="col-encaminhar-fixa">
-                                <button type="button"
-                                    class="btn-encaminhar-aluno ${jaFoi ? 'encaminhado' : ''}"
-                                    data-btn-enc="${idx}-${i}"
-                                    title="${jaFoi ? 'Já encaminhado para Práticas (clique para remover)' : 'Encaminhar aluno para ficha de Práticas'}"
-                                    onclick="alternarEncaminharAluno(${idx}, ${i})">
-                                    ${jaFoi ? '<i class="fa-solid fa-check"></i> Prática' : '<i class="fa-solid fa-share"></i> Enviar'}
-                                </button>
-                            </td>
-                        `;
-                    } else {
-                        celulaEncaminhar = `<td class="col-encaminhar-fixa"></td>`;
-                    }
+            if (ehPratica) {
+                for (let i = 0; i < totalLinhas; i++) {
+                    const al = grupo.alunos[i];
+                    linhasHTML += `
+                        <tr>
+                            <td class="col-ord">${i + 1}</td>
+                            <td>${al ? escaparHTML(al.aluno) : ''}</td>
+                            <td class="col-mat">${al ? escaparHTML(al.contrato) : ''}</td>
+                            <td></td>
+                            <td class="col-mat"></td>
+                            <td class="col-mat"></td>
+                            <td class="col-mat"></td>
+                            <td class="col-mat"></td>
+                            <td class="col-mat"></td>
+                        </tr>
+                    `;
                 }
-
-                linhasHTML += `
-                    <tr>
-                        <td class="col-ord">${i + 1}</td>
-                        <td>${al ? escaparHTML(al.aluno) : ''}</td>
-                        <td class="col-mat">${al ? escaparHTML(al.contrato) : ''}</td>
-                        <td></td>
-                        <td>${obs}</td>
-                        ${celulaEncaminhar}
-                    </tr>
-                `;
-            }
-
-            // Somente aulas regulares possuem seção de REPOSIÇÕES DO DIA
-            if (!ehPratica) {
+            } else {
+                for (let i = 0; i < totalLinhas; i++) {
+                    const al = grupo.alunos[i];
+                    const obs = (al && marcarElos && al.tipoSala === 'elos') ? 'Estação Elos' : '';
+                    linhasHTML += `
+                        <tr>
+                            <td class="col-ord">${i + 1}</td>
+                            <td>${al ? escaparHTML(al.aluno) : ''}</td>
+                            <td class="col-mat">${al ? escaparHTML(al.contrato) : ''}</td>
+                            <td></td>
+                            <td>${obs}</td>
+                        </tr>
+                    `;
+                }
                 linhasHTML += `
                     <tr class="ficha-faixa-rep">
                         <td colspan="5">REPOSIÇÕES DO DIA</td>
-                        ${mostrarColunaFixa ? '<td class="col-encaminhar-fixa"></td>' : ''}
                     </tr>
-                    <tr>
-                        <td class="col-ord">1</td><td></td><td class="col-mat"></td><td></td><td></td>
-                        ${mostrarColunaFixa ? '<td class="col-encaminhar-fixa"></td>' : ''}
-                    </tr>
-                    <tr>
-                        <td class="col-ord">2</td><td></td><td class="col-mat"></td><td></td><td></td>
-                        ${mostrarColunaFixa ? '<td class="col-encaminhar-fixa"></td>' : ''}
-                    </tr>
+                    <tr><td class="col-ord">1</td><td></td><td class="col-mat"></td><td></td><td></td></tr>
+                    <tr><td class="col-ord">2</td><td></td><td class="col-mat"></td><td></td><td></td></tr>
                 `;
             }
+
+            const linhaExtraPratica = ehPratica ? `
+                <tr>
+                    <td colspan="2"><span class="ficha-meta-label">CURSO:</span> ${escaparHTML((custom.curso || '').toUpperCase())}</td>
+                    <td colspan="2"><span class="ficha-meta-label">TEMÁTICA DA AULA:</span> ${escaparHTML((custom.tematica || '').toUpperCase())}</td>
+                </tr>
+            ` : '';
+
+            const theadHTML = ehPratica ? `
+                <tr>
+                    <th rowspan="2" style="width: 3.5%;">O/</th>
+                    <th rowspan="2" style="width: 30%;">ALUNO(A)</th>
+                    <th rowspan="2" style="width: 8%;">MATRÍCULA</th>
+                    <th rowspan="2" style="width: 37.5%;">ASSINATURA DO ALUNO(A)</th>
+                    <th colspan="5" style="width: 21%;">QUADRO DA AVALIAÇÃO DOCENTE</th>
+                </tr>
+                <tr>
+                    <th style="width: 4.2%;">PA</th>
+                    <th style="width: 4.2%;">CP</th>
+                    <th style="width: 4.2%;">SO</th>
+                    <th style="width: 4.2%;">AU</th>
+                    <th style="width: 4.2%;">CO</th>
+                </tr>
+            ` : `
+                <tr>
+                    <th style="width: 3.5%;">O/</th>
+                    <th style="width: 31.5%;">ALUNO(A)</th>
+                    <th style="width: 8%;">MATRÍCULA</th>
+                    <th style="width: 36%;">ASSINATURA DO ALUNO(A)</th>
+                    <th style="width: 21%;">OBSERVAÇÕES RELEVANTES</th>
+                </tr>
+            `;
 
             const agora = new Date();
             const carimbo = `${agora.toLocaleDateString('pt-BR')} ${agora.toLocaleTimeString('pt-BR').substring(0, 5)}`;
@@ -2950,18 +3023,12 @@
                             <td><span class="ficha-meta-label">DATA:</span> ${escaparHTML(dataBR)}</td>
                             <td><span class="ficha-meta-label">PERÍODO:</span> ${escaparHTML(periodoLabel)}</td>
                         </tr>
+                        ${linhaExtraPratica}
                     </table>
 
                     <table class="ficha-tabela-alunos">
                         <thead>
-                            <tr>
-                                <th style="width: 3.5%;">O/</th>
-                                <th style="width: 31.5%;">ALUNO(A)</th>
-                                <th style="width: 8%;">MATRÍCULA</th>
-                                <th style="width: 36%;">ASSINATURA DO ALUNO(A)</th>
-                                <th style="width: 21%;">OBSERVAÇÕES RELEVANTES</th>
-                                ${mostrarColunaFixa ? '<th class="col-encaminhar-fixa"><i class="fa-solid fa-share"></i> PRÁTICA</th>' : ''}
-                            </tr>
+                            ${theadHTML}
                         </thead>
                         <tbody>
                             ${linhasHTML}
@@ -3005,6 +3072,8 @@
                     turmaLetra: fichaPraticaEditavel.turmaLetra,
                     periodo: fichaPraticaEditavel.periodo,
                     professor: fichaPraticaEditavel.professor,
+                    curso: fichaPraticaEditavel.curso,
+                    tematica: fichaPraticaEditavel.tematica,
                     emitidoPor: fichaPraticaEditavel.emitidoPor || (document.getElementById('ger-emitido-por').value || ''),
                     minLinhas: fichaPraticaEditavel.minLinhas
                 }
@@ -3136,9 +3205,17 @@
                     </div>
 
                     <div class="grid-gerador-compacto">
-                        <div class="campo" style="grid-column: span 2;">
+                      <div class="campo" style="grid-column: span 2;">
                             <label>SALA / LABORATÓRIO</label>
                             <select onchange="aoAlterarCampoPratica('sala', this.value)">${opcoesSala}</select>
+                        </div>
+                        <div class="campo">
+                            <label>CURSO (EDITÁVEL)</label>
+                            <input type="text" placeholder="Ex.: Assistente Administrativo" value="${escaparHTML(fichaPraticaEditavel.curso)}" oninput="aoAlterarCampoPratica('curso', this.value)">
+                        </div>
+                        <div class="campo" style="grid-column: span 2;">
+                            <label>TEMÁTICA DA AULA (EDITÁVEL)</label>
+                            <input type="text" placeholder="Ex.: Rotinas de Atendimento / Prática em Laboratório" value="${escaparHTML(fichaPraticaEditavel.tematica)}" oninput="aoAlterarCampoPratica('tematica', this.value)">
                         </div>
                         <div class="campo">
                             <label>DATA</label>
@@ -3333,11 +3410,24 @@
                             </div>
                         </div>
 
-                        <!-- PAINEL RÁPIDO PARA ENCAMINHAR ALUNOS À FICHA DE PRÁTICAS -->
+                       <!-- PAINEL RÁPIDO PARA ENCAMINHAR ALUNOS À FICHA DE PRÁTICAS -->
                         <div class="painel-encaminhar-rapido" id="painel-encaminhar-${idx}" style="display:none;">
-                            <div style="font-size:11px; font-weight:700; color:var(--marrom); text-transform:uppercase;">
-                                <i class="fa-solid fa-share" style="color:var(--laranja);"></i>
-                                Selecione os alunos para encaminhar à aba de Práticas Profissionalizantes:
+                            <div class="painel-encaminhar-topo">
+                                <div style="font-size:11px; font-weight:700; color:var(--marrom); text-transform:uppercase;">
+                                    <i class="fa-solid fa-share" style="color:var(--laranja);"></i>
+                                    Encaminhar alunos desta turma para Práticas Profissionalizantes:
+                                </div>
+                                <div style="display:flex; gap:6px; flex-wrap:wrap;">
+                                    <button type="button" class="btn-acao btn-laranja btn-sm" onclick="encaminharTodosDaTurma(${idx}, true)">
+                                        <i class="fa-solid fa-check-double"></i> Selecionar Todos
+                                    </button>
+                                    <button type="button" class="btn-acao btn-azul btn-sm" onclick="encaminharTodosDaTurma(${idx}, false)">
+                                        <i class="fa-solid fa-xmark"></i> Remover Todos
+                                    </button>
+                                    <button type="button" class="btn-acao btn-verde btn-sm" onclick="selecionarModeloFicha('praticas')">
+                                        <i class="fa-solid fa-flask"></i> Abrir Ficha de Práticas
+                                    </button>
+                                </div>
                             </div>
                             <div class="grid-alunos-encaminhar">${listaEncaminharHTML}</div>
                         </div>
