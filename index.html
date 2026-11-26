@@ -31,7 +31,7 @@
             --sombra-box: 0 4px 15px rgba(0,0,0,0.06);
             --sombra-interna: inset 0 2px 4px rgba(0,0,0,0.03);
             --vermelho: #E74C3C;
-            --verde: #27AE60;
+            --verde: #D4AF37;
         }
 
         * { 
@@ -827,12 +827,12 @@
             position: static !important;
         }
 
-        .ficha-tabela-alunos td {
+      .ficha-tabela-alunos td {
             border: 1px solid #000 !important;
-            padding: 1px 5px !important;
-            height: 15px;
+            padding: 2px 5px !important;
+            height: 17px;
             font-size: 9.5px !important;
-            line-height: 1.15;
+            line-height: 1.2;
             color: #000 !important;
             background: #FFFFFF !important;
             text-align: left;
@@ -2132,7 +2132,7 @@
                             return baseDeDados;
                         } else {
                             throw new Error("Erro da planilha: " + resposta.mensagem);
-                        }f
+                        }
                     } catch(e) {
                         throw new Error(e.message + "\n(O Google bloqueou a resposta. Provavelmente falha de permissão)");
                     }
@@ -3695,7 +3695,7 @@ function construirHTMLFicha(grupo, idx, paraImpressao = false) {
                 .ficha-tabela-alunos { width: 100%; border-collapse: collapse; border: 1.5px solid #000; }
                 .ficha-tabela-alunos thead { display: table-header-group; }
                 .ficha-tabela-alunos th { border: 1px solid #000; padding: 2.5px 4px; font-size: 9.2px; font-weight: 700; text-align: center; background: #fff; color: #000; }
-                .ficha-tabela-alunos td { border: 1px solid #000; padding: 1px 5px; height: 14.2px; font-size: 9px; line-height: 1.1; color: #000; }
+                .ficha-tabela-alunos td { border: 1px solid #000; padding: 2px 5px; height: 17px; font-size: 9.5px; line-height: 1.2; color: #000; }
                 .ficha-folha.ficha-pratica .ficha-tabela-alunos td { height: 22px; font-size: 9.5px; }
                 .ficha-tabela-alunos td.col-ord, .ficha-tabela-alunos td.col-mat { text-align: center; }
                 .ficha-tabela-alunos tr.ficha-faixa-rep td { text-align: center; font-weight: 700; padding: 2px; height: auto; border-top: 1.5px solid #000; border-bottom: 1.5px solid #000; }
