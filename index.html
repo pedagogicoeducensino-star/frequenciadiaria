@@ -1928,7 +1928,7 @@
         };
         
         // --- LINK DO APPS SCRIPT (INALTERADO) ---
-        const URL_DO_APPS_SCRIPT = "https://script.google.com/macros/s/AKfycbyndr3HlOwfHfwpUwLSMlKmd5J8MOi9apfs6EefADshr0gRfbP7lfFAi6JTdJ0HDJWkEQ/exec"; 
+        const URL_DO_APPS_SCRIPT = "https://script.google.com/macros/s/AKfycbyKMF7_M5dNpOsYg9Hq-Uf33QOUy70XlGi8kD3o647UAKqyC8iLFRUqZ3lFjQ37uowQxg/exec"; 
         
         let usuarioAtivo = "";
         let baseDeDados = [];
@@ -2118,8 +2118,8 @@
             buscarDadosDaPlanilha();
         }
 
-        function buscarDadosDaPlanilha() {
-            return fetch(URL_DO_APPS_SCRIPT)
+       function buscarDadosDaPlanilha() {
+            return fetch(`${URL_DO_APPS_SCRIPT}?t=${Date.now()}`)
                 .then(res => res.text())
                 .then(texto => {
                     try {
@@ -2132,7 +2132,7 @@
                             return baseDeDados;
                         } else {
                             throw new Error("Erro da planilha: " + resposta.mensagem);
-                        }
+                        }f
                     } catch(e) {
                         throw new Error(e.message + "\n(O Google bloqueou a resposta. Provavelmente falha de permissão)");
                     }
@@ -3511,10 +3511,40 @@ function construirHTMLFicha(grupo, idx, paraImpressao = false) {
             document.getElementById(`vinc-faltas-${idx}`).value = Math.max(0, mat - pres);
         }
 
+// =========================================================================
+        // TRAVA UNIFICADA ANTI-DUPLICIDADE (USADA NO GERADOR E NO PAINEL)
+        // =========================================================================
+        let processandoLancamento = false;
+
+        function normalizarDataComparacao(dataStr) {
+            const limpa = String(dataStr || '').trim();
+            const partes = limpa.split('/');
+            if (partes.length === 3) {
+                return `${partes[0].padStart(2, '0')}/${partes[1].padStart(2, '0')}/${partes[2]}`;
+            }
+            return limpa;
+        }
+
+        function normalizarTurmaComparacao(turmaStr) {
+            return String(turmaStr || '').split(' - ')[0].trim().toLowerCase();
+        }
+
+        function encontrarDuplicidade(listaRegistros, turma, dataFormatada, idIgnorar = null) {
+            const turmaAlvo = normalizarTurmaComparacao(turma);
+            const dataAlvo = normalizarDataComparacao(dataFormatada);
+            return (listaRegistros || []).find(r => {
+                if (idIgnorar && Number(r.id) === Number(idIgnorar)) return false;
+                return normalizarTurmaComparacao(r.turma) === turmaAlvo &&
+                       normalizarDataComparacao(r.dataAula) === dataAlvo;
+            });
+        }
+
         // =========================================================================
         // LANÇAMENTO PROTEGIDO POR SENHA DO GERADOR -> PLANILHA ATUAL
         // =========================================================================
         function lancarDoGeradorParaControle(idx) {
+            if (processandoLancamento) return;
+
             const turma = document.getElementById(`vinc-turma-${idx}`).value;
             const mat = parseInt(document.getElementById(`vinc-mat-${idx}`).value, 10);
             const pres = parseInt(document.getElementById(`vinc-pres-${idx}`).value, 10);
@@ -3526,94 +3556,119 @@ function construirHTMLFicha(grupo, idx, paraImpressao = false) {
                 return;
             }
 
+            const hoje = new Date();
+            const hojeFormatado = `${hoje.getFullYear()}-${String(hoje.getMonth() + 1).padStart(2, '0')}-${String(hoje.getDate()).padStart(2, '0')}`;
             const [a, m, d] = dataIso.split('-');
             const dataFormatada = `${d}/${m}/${a}`;
             const totPres = pres + rep;
             const faltas = Math.max(0, mat - pres);
 
-            mostrarModal(
-                "Confirmação do Colaborador",
-                `Digite sua senha para lançar ${turma.split(' - ')[0]} (${dataFormatada}) — Mat: ${mat} | Pres: ${pres} | Rep: ${rep} | Faltas: ${faltas}:`,
-                "fa-key",
-                "var(--laranja)",
-                "prompt",
-                function(senhaDigitada) {
-                    const colaboradorAutorizado = credenciais[senhaDigitada];
-                    if (!colaboradorAutorizado) {
-                        mostrarModal("Acesso Negado", "Senha de colaborador incorreta! Nada foi gravado.", "fa-lock", "var(--vermelho)", "alerta");
-                        return;
-                    }
+            const solicitarSenhaELancar = function() {
+                mostrarModal(
+                    "Confirmação do Colaborador",
+                    `Digite sua senha para lançar ${turma.split(' - ')[0]} (${dataFormatada}) — Mat: ${mat} | Pres: ${pres} | Rep: ${rep} | Faltas: ${faltas}:`,
+                    "fa-key",
+                    "var(--laranja)",
+                    "prompt",
+                    function(senhaDigitada) {
+                        const colaboradorAutorizado = credenciais[senhaDigitada];
+                        if (!colaboradorAutorizado) {
+                            mostrarModal("Acesso Negado", "Senha de colaborador incorreta! Nada foi gravado.", "fa-lock", "var(--vermelho)", "alerta");
+                            return;
+                        }
 
-                    const aviso = document.getElementById('aviso-salvando');
-                    aviso.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Verificando duplicidade na planilha...';
-                    aviso.style.display = 'block';
+                        if (processandoLancamento) return;
+                        processandoLancamento = true;
 
-                    fetch(URL_DO_APPS_SCRIPT)
-                        .then(res => res.text())
-                        .then(texto => {
-                            const resp = JSON.parse(texto);
-                            if (resp.status !== 'sucesso') throw new Error(resp.mensagem || 'Erro ao consultar planilha');
-                            const registrosAtuais = resp.dados || [];
-                            baseDeDados = registrosAtuais;
+                        const aviso = document.getElementById('aviso-salvando');
+                        aviso.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Verificando duplicidade na planilha...';
+                        aviso.style.display = 'block';
 
-                            const jaExiste = registrosAtuais.find(r => r.turma === turma && r.dataAula === dataFormatada);
-                            if (jaExiste) {
-                                aviso.style.display = 'none';
-                                mostrarModal(
-                                    "Registro Já Existente",
-                                    `A ${turma.split(' - ')[0]} já possui lançamento em ${dataFormatada} (feito por ${jaExiste.colaborador}). O registro existente foi preservado.`,
-                                    "fa-ban",
-                                    "var(--vermelho)",
-                                    "alerta"
-                                );
-                                return null;
-                            }
+                        // Consulta em tempo real (sem cache) antes de gravar
+                        fetch(`${URL_DO_APPS_SCRIPT}?t=${Date.now()}`)
+                            .then(res => res.text())
+                            .then(texto => {
+                                const resp = JSON.parse(texto);
+                                if (resp.status !== 'sucesso') throw new Error(resp.mensagem || 'Erro ao consultar planilha');
+                                const registrosAtuais = resp.dados || [];
+                                baseDeDados = registrosAtuais;
 
-                            const agora = new Date();
-                            const novoRegistro = {
-                                id: Date.now(),
-                                colaborador: colaboradorAutorizado,
-                                dataReg: `${agora.toLocaleDateString('pt-BR')} às ${agora.toLocaleTimeString('pt-BR').substring(0,5)}`,
-                                dataAula: dataFormatada,
-                                turma: turma,
-                                mat: mat,
-                                pres: pres,
-                                rep: rep,
-                                totPres: totPres,
-                                faltas: faltas
-                            };
+                                const jaExiste = encontrarDuplicidade(registrosAtuais, turma, dataFormatada, null);
+                                if (jaExiste) {
+                                    aviso.style.display = 'none';
+                                    mostrarModal(
+                                        "Duplicidade Bloqueada",
+                                        `A ${turma.split(' - ')[0]} já possui lançamento em ${dataFormatada} (registrado por ${jaExiste.colaborador} em ${jaExiste.dataReg}). O registro original foi preservado.`,
+                                        "fa-ban",
+                                        "var(--vermelho)",
+                                        "alerta"
+                                    );
+                                    return null;
+                                }
 
-                            aviso.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Gravando frequência com segurança...';
-                            return fetch(URL_DO_APPS_SCRIPT, {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                                body: JSON.stringify({ acao: 'salvarRegistro', dados: novoRegistro })
+                                const agora = new Date();
+                                const novoRegistro = {
+                                    id: Date.now(),
+                                    colaborador: colaboradorAutorizado,
+                                    dataReg: `${agora.toLocaleDateString('pt-BR')} às ${agora.toLocaleTimeString('pt-BR').substring(0,5)}`,
+                                    dataAula: dataFormatada,
+                                    turma: turma,
+                                    mat: mat,
+                                    pres: pres,
+                                    rep: rep,
+                                    totPres: totPres,
+                                    faltas: faltas
+                                };
+
+                                aviso.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Gravando frequência com segurança...';
+                                return fetch(URL_DO_APPS_SCRIPT, {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                                    body: JSON.stringify({ acao: 'salvarRegistro', dados: novoRegistro })
+                                })
+                                .then(r => r.text())
+                                .then(t => {
+                                    const rSave = JSON.parse(t);
+                                    if (rSave.status !== 'sucesso') throw new Error(rSave.mensagem);
+                                    baseDeDados.push(novoRegistro);
+                                    turmasLancadasSessao[`${dataFormatada}|${turma}`] = colaboradorAutorizado;
+                                    aviso.style.display = 'none';
+                                    aviso.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Sincronizando dados...';
+                                    renderizarFichasGeradas();
+                                    mostrarModal(
+                                        "Lançamento Concluído!",
+                                        `Frequência da ${turma.split(' - ')[0]} (${dataFormatada}) gravada por ${colaboradorAutorizado} sem alterar nenhum outro registro.`,
+                                        "fa-circle-check",
+                                        "var(--verde)",
+                                        "alerta"
+                                    );
+                                });
                             })
-                            .then(r => r.text())
-                            .then(t => {
-                                const rSave = JSON.parse(t);
-                                if (rSave.status !== 'sucesso') throw new Error(rSave.mensagem);
-                                baseDeDados.push(novoRegistro);
-                                turmasLancadasSessao[`${dataFormatada}|${turma}`] = colaboradorAutorizado;
+                            .catch(err => {
                                 aviso.style.display = 'none';
                                 aviso.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Sincronizando dados...';
-                                renderizarFichasGeradas();
-                                mostrarModal(
-                                    "Lançamento Concluído!",
-                                    `Frequência da ${turma.split(' - ')[0]} (${dataFormatada}) gravada por ${colaboradorAutorizado} sem alterar nenhum outro registro.`,
-                                    "fa-circle-check",
-                                    "var(--verde)",
-                                    "alerta"
-                                );
+                                mostrarModal("Erro ao Lançar", "Falha na comunicação com a planilha: " + err.message, "fa-triangle-exclamation", "var(--vermelho)", "alerta");
+                            })
+                            .finally(() => {
+                                processandoLancamento = false;
                             });
-                        })
-                        .catch(err => {
-                            aviso.style.display = 'none';
-                            aviso.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Sincronizando dados...';
-                            mostrarModal("Erro ao Lançar", "Falha na comunicação com a planilha: " + err.message, "fa-triangle-exclamation", "var(--vermelho)", "alerta");
-                        });
-                }
-            );
+                    }
+                );
+            };
+
+            // Alerta obrigatório quando a data não for a data atual
+            if (dataIso !== hojeFormatado) {
+                mostrarModal(
+                    "Atenção — Data Diferente de Hoje",
+                    `Você está tentando registrar a ${turma.split(' - ')[0]} para uma data diferente da atual (${dataFormatada}). Deseja continuar?`,
+                    "fa-calendar-day",
+                    "var(--laranja)",
+                    "confirmacao",
+                    solicitarSenhaELancar
+                );
+            } else {
+                solicitarSenhaELancar();
+            }
         }
 
         // =========================================================================
@@ -3878,7 +3933,9 @@ function construirHTMLFicha(grupo, idx, paraImpressao = false) {
             });
         }
 
-        function validarRegistro() {
+      function validarRegistro() {
+            if (processandoLancamento) return;
+
             const turma = document.getElementById('turma').value;
             const dataAula = document.getElementById('data-aula').value;
             const mat = parseInt(document.getElementById('mat').value);
@@ -3901,23 +3958,59 @@ function construirHTMLFicha(grupo, idx, paraImpressao = false) {
             const hojeFormatado = `${hoje.getFullYear()}-${String(hoje.getMonth() + 1).padStart(2, '0')}-${String(hoje.getDate()).padStart(2, '0')}`;
             const [a, m, d] = dataAula.split('-');
             const dataFormatada = `${d}/${m}/${a}`;
-            
-            const registroExistente = baseDeDados.find(r => r.turma === turma && r.dataAula === dataFormatada);
-            
-            if (registroExistente && registroExistente.id !== idSendoEditado) {
-                mostrarModal("Duplicidade", `A ${turma.split(" - ")[0]} já possui registro nesta data.`, "fa-ban", "var(--vermelho)", "alerta");
-                return;
-            }
 
-            if (dataAula !== hojeFormatado) {
-                mostrarModal("Atenção", `Registrar frequência para data retroativa (${dataFormatada})?`, "fa-calendar-day", "var(--laranja)", "confirmacao",
-                    function() { 
-                        executarSalvamentoRegistro(turma, dataFormatada, mat, pres); 
+            processandoLancamento = true;
+            const aviso = document.getElementById('aviso-salvando');
+            aviso.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Verificando duplicidade na planilha...';
+            aviso.style.display = 'block';
+
+            // Consulta a planilha ao vivo antes de liberar o registro (evita duplicar entre computadores diferentes)
+            fetch(`${URL_DO_APPS_SCRIPT}?t=${Date.now()}`)
+                .then(res => res.text())
+                .then(texto => {
+                    const resp = JSON.parse(texto);
+                    if (resp.status !== 'sucesso') throw new Error(resp.mensagem || 'Falha ao consultar planilha');
+
+                    baseDeDados = resp.dados || [];
+                    atualizarTela();
+                    aviso.style.display = 'none';
+                    aviso.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Sincronizando dados...';
+
+                    const registroExistente = encontrarDuplicidade(baseDeDados, turma, dataFormatada, idSendoEditado);
+                    if (registroExistente) {
+                        mostrarModal(
+                            "Duplicidade Bloqueada",
+                            `A ${turma.split(" - ")[0]} já possui registro em ${dataFormatada} (lançado por ${registroExistente.colaborador} em ${registroExistente.dataReg}).`,
+                            "fa-ban",
+                            "var(--vermelho)",
+                            "alerta"
+                        );
+                        return;
                     }
-                );
-            } else {
-                executarSalvamentoRegistro(turma, dataFormatada, mat, pres);
-            }
+
+                    if (dataAula !== hojeFormatado) {
+                        mostrarModal(
+                            "Atenção — Data Diferente de Hoje",
+                            `Registrar frequência para data diferente da atual (${dataFormatada})?`,
+                            "fa-calendar-day",
+                            "var(--laranja)",
+                            "confirmacao",
+                            function() { 
+                                executarSalvamentoRegistro(turma, dataFormatada, mat, pres); 
+                            }
+                        );
+                    } else {
+                        executarSalvamentoRegistro(turma, dataFormatada, mat, pres);
+                    }
+                })
+                .catch(erro => {
+                    aviso.style.display = 'none';
+                    aviso.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Sincronizando dados...';
+                    mostrarModal("Erro de Conexão", "Não foi possível verificar a planilha antes de salvar: " + erro.message, "fa-wifi", "var(--vermelho)", "alerta");
+                })
+                .finally(() => {
+                    processandoLancamento = false;
+                });
         }
 
         function executarSalvamentoRegistro(turma, dataFormatada, mat, pres) {
