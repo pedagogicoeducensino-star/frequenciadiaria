@@ -827,15 +827,20 @@
             position: static !important;
         }
 
-      .ficha-tabela-alunos td {
+     .ficha-tabela-alunos td {
             border: 1px solid #000 !important;
             padding: 2px 5px !important;
-            height: 17px;
+            height: 18.5px;
             font-size: 9.5px !important;
-            line-height: 1.2;
+            line-height: 1.25;
             color: #000 !important;
             background: #FFFFFF !important;
             text-align: left;
+        }
+
+        .ficha-tabela-alunos tr.ficha-faixa-rep {
+            page-break-after: avoid;
+            break-after: avoid;
         }
 
         /* Práticas com 20 linhas: altura mais confortável para assinatura */
@@ -3674,7 +3679,7 @@ function construirHTMLFicha(grupo, idx, paraImpressao = false) {
         // =========================================================================
         // IMPRESSÃO E PDF DAS FICHAS DE PRESENÇA (A4 PAISAGEM)
         // =========================================================================
-        function getEstilosImpressaoFicha() {
+       function getEstilosImpressaoFicha() {
             return `
                 @page { size: A4 landscape; margin: 5mm 6mm; }
                 * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Calibri', 'Arial', sans-serif; }
@@ -3695,9 +3700,10 @@ function construirHTMLFicha(grupo, idx, paraImpressao = false) {
                 .ficha-tabela-alunos { width: 100%; border-collapse: collapse; border: 1.5px solid #000; }
                 .ficha-tabela-alunos thead { display: table-header-group; }
                 .ficha-tabela-alunos th { border: 1px solid #000; padding: 2.5px 4px; font-size: 9.2px; font-weight: 700; text-align: center; background: #fff; color: #000; }
-                .ficha-tabela-alunos td { border: 1px solid #000; padding: 2px 5px; height: 17px; font-size: 9.5px; line-height: 1.2; color: #000; }
+                .ficha-tabela-alunos td { border: 1px solid #000; padding: 2px 5px; height: 18.5px; font-size: 9.5px; line-height: 1.25; color: #000; }
                 .ficha-folha.ficha-pratica .ficha-tabela-alunos td { height: 22px; font-size: 9.5px; }
                 .ficha-tabela-alunos td.col-ord, .ficha-tabela-alunos td.col-mat { text-align: center; }
+                .ficha-tabela-alunos tr.ficha-faixa-rep { page-break-after: avoid; break-after: avoid; }
                 .ficha-tabela-alunos tr.ficha-faixa-rep td { text-align: center; font-weight: 700; padding: 2px; height: auto; border-top: 1.5px solid #000; border-bottom: 1.5px solid #000; }
                 .ficha-rodape { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 9px; font-size: 9.2px; gap: 14px; }
                 .ficha-rodape-emitido { display: flex; align-items: flex-end; gap: 6px; }
